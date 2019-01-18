@@ -1,0 +1,125 @@
+{
+	"build_systems":
+	[
+		{
+			"cmd":
+			[
+				"g++",
+				"C:/Projects/Nautilus/main.cpp",
+				"-o",
+				"C:/Projects/Nautilus/Nautilus",
+				"C:/Projects/Nautilus/engine.cpp",
+				"C:/Projects/Nautilus/src/*.cpp",
+				"C:/Projects/Nautilus/src/core/*.cpp",
+				"-IC:/Libraries/SDL2-2.0.8-mingw/i686-w64-mingw32/include",
+				"-LC:/Libraries/SDL2-2.0.8-mingw/i686-w64-mingw32/lib",
+				"-IC:/Libraries/bass24/c",
+				"-LC:/Libraries/bass24/c",
+				"-IC:/Libraries/bass_fx24/C",
+				"-LC:/Libraries/bass_fx24/C",
+				"-lbass",
+				"-lbass_fx",
+				"-lmingw32",
+				"-lSDL2main",
+				"-lSDL2",
+				"-lopengl32",
+				"-lws2_32",
+				"-lSDL2_ttf",
+				"&&",
+				"C:/Projects/Nautilus/Nautilus"
+			],
+			"file_regex": "^(..[^:]*):([0-9]+):?([0-9]+)?:? (.*)$",
+			"name": "Nautilus",
+			"selector": "source.c, source.c++",
+			"variants":
+		    [
+		        {
+		            "name": "Compile Client",
+		            "cmd": [
+		            	"g++",
+						"C:/Projects/Nautilus/main.cpp",
+						"-o",
+						"C:/Projects/Nautilus/Nautilus",
+						"C:/Projects/Nautilus/engine.cpp",
+						"C:/Projects/Nautilus/src/*.cpp",
+						"C:/Projects/Nautilus/src/core/*.cpp",
+						"-IC:/Libraries/SDL2-2.0.8-mingw/i686-w64-mingw32/include",
+						"-LC:/Libraries/SDL2-2.0.8-mingw/i686-w64-mingw32/lib",
+						"-IC:/Libraries/bass24/c",
+						"-LC:/Libraries/bass24/c",
+						"-IC:/Libraries/bass_fx24/C",
+						"-LC:/Libraries/bass_fx24/C",
+						"-lbass",
+						"-lbass_fx",
+						"-lmingw32",
+						"-lSDL2main",
+						"-lSDL2",
+						"-lopengl32",
+						"-lws2_32",
+						"-lSDL2_ttf",
+					]
+		        },
+		        {
+		            "name": "Compile Server",
+		            "cmd": [
+		            	"g++",
+						"C:/Projects/Thane/server/main.cpp",
+						"-o",
+						"C:/Projects/Thane/Server",
+						"C:/Projects/Thane/server/src/*.cpp",
+						"-lws2_32",
+					]
+		        },
+		        {
+		        	"name": "Compile Client/Server",
+		            "cmd": [
+		            	"g++",
+						"C:/Projects/Thane/main.cpp",
+						"-o",
+						"C:/Projects/Thane/Thane",
+						"C:/Projects/Thane/build.res",
+						"C:/Projects/Thane/engine.cpp",
+						"C:/Projects/Thane/src/*.cpp",
+						"C:/Projects/Thane/src/board/*.cpp",
+						"C:/Projects/Thane/src/track/*.cpp",
+						"C:/Projects/Thane/src/environment/*.cpp",
+						"C:/Projects/Thane/src/effects/*.cpp",
+						"C:/Projects/Thane/src/hud/*.cpp",
+						"C:/Projects/Thane/src/network/*.cpp",
+						"C:/Projects/Thane/src/core/*.cpp",
+						"C:/Projects/Thane/src/core/imgui/*.cpp",
+						"-IC:/Libraries/SDL2-2.0.8-mingw/i686-w64-mingw32/include",
+						"-LC:/Libraries/SDL2-2.0.8-mingw/i686-w64-mingw32/lib",
+						"-IC:/Libraries/bass24/c",
+						"-LC:/Libraries/bass24/c",
+						"-IC:/Libraries/bass_fx24/C",
+						"-LC:/Libraries/bass_fx24/C",
+						"-lbass",
+						"-lbass_fx",
+						"-lmingw32",
+						"-lSDL2main",
+						"-lSDL2",
+						"-lopengl32",
+						"-lws2_32",
+						"-lSDL2_ttf",
+						"&&",
+		            	"g++",
+						"C:/Projects/Thane/server/main.cpp",
+						"-o",
+						"C:/Projects/Thane/Server",
+						"C:/Projects/Thane/server/src/*.cpp",
+						"-lws2_32",
+					]
+		        }
+		    ],
+			"shell": true,
+			"working_dir": "${file_path}"
+		}
+	],
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	]
+}
