@@ -27,7 +27,7 @@ void Nautilus::setupStats() {
 
 void Nautilus::update(float elapsedTimeSeconds) {
 	if (input.getRightButtonPress()) {
-		if (abs(center().x - input.getMouseXCamera()) > 3 && abs(center().y - input.getMouseYCamera()) > 3) {
+		if (abs(center().x - input.getMouseXCamera()) > 3 || abs(center().y - input.getMouseYCamera()) > 3) {
 			createPath(input.getMouseXCamera(), input.getMouseYCamera());
 		}
 	}
