@@ -20,11 +20,14 @@ private:
 	std::vector<int> controllerList;
 	std::vector<int> controllerPressList;
 
+	Vector2* cameraPosition;
 public:
+	inline void linkCamera(Vector2* cameraPosition) { this->cameraPosition = cameraPosition; };
+
 	std::vector<SDL_Keycode> returnKeyList();
 
-	inline int getMouseX() { return mouseX; };
-	inline int getMouseY() { return mouseY; };
+	inline int getMouseX() { return cameraPosition->x + mouseX; };
+	inline int getMouseY() { return cameraPosition->y + mouseY; };
 	
 	inline bool getLeftButtonPress() { return leftButtonPress; };
 	inline bool getRightButtonPress() { return rightButtonPress; };

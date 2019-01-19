@@ -9,7 +9,7 @@ void World::initialize() {
 }
 
 void World::update() {
-	nautilus.update();
+	nautilus.update(timer.getTimeSeconds());
 }
 
 void World::draw() {

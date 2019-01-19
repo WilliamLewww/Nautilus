@@ -1,5 +1,6 @@
 #pragma once
 #include "core/drawing.h"
+#include "core/timer.h"
 #include "nautilus.h"
 
 class World {
