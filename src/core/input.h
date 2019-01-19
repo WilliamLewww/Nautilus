@@ -26,8 +26,10 @@ public:
 
 	std::vector<SDL_Keycode> returnKeyList();
 
-	inline int getMouseX() { return cameraPosition->x + mouseX; };
-	inline int getMouseY() { return cameraPosition->y + mouseY; };
+	inline int getMouseX() { return mouseX; };
+	inline int getMouseY() { return mouseY; };
+	inline int getMouseXCamera() { return cameraPosition->x + mouseX; };
+	inline int getMouseYCamera() { return cameraPosition->y + mouseY; };
 	
 	inline bool getLeftButtonPress() { return leftButtonPress; };
 	inline bool getRightButtonPress() { return rightButtonPress; };

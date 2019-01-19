@@ -13,4 +13,5 @@ struct StatsUpgrade {
 	double armor, magic_resist;
 };
 
+double getActualSpeed(Stats stats);
 void upgradeStats(Stats& stats, StatsUpgrade statsUpgrade);

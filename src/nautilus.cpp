@@ -2,7 +2,7 @@
 
 void Nautilus::initialize() {
 	position = Vector2(250, 250);
-	width = 50;
+	width = 60;
 	height = 75;
 
 	setupStats();
@@ -27,7 +27,9 @@ void Nautilus::setupStats() {
 
 void Nautilus::update(float elapsedTimeSeconds) {
 	if (input.getRightButtonPress()) {
-		createPath(input.getMouseX(), input.getMouseY());
+		if (abs(center().x - input.getMouseXCamera()) > 3 && abs(center().y - input.getMouseYCamera()) > 3) {
+			createPath(input.getMouseXCamera(), input.getMouseYCamera());
+		}
 	}
 
 	followPath(elapsedTimeSeconds);
@@ -44,8 +46,8 @@ void Nautilus::followPath(float elapsedTimeSeconds) {
 	if (pathVertices.size() > 1) {
 		Vector2 difference = pathVertices[1] - pathVertices[0];
 
-		position.x += (difference.x / (abs(difference.x) + abs(difference.y))) * stats.movement_speed * elapsedTimeSeconds;
-		position.y += (difference.y / (abs(difference.x) + abs(difference.y))) * stats.movement_speed * elapsedTimeSeconds;
+		position.x += (difference.x / (abs(difference.x) + abs(difference.y))) * getActualSpeed(stats) * elapsedTimeSeconds;
+		position.y += (difference.y / (abs(difference.x) + abs(difference.y))) * getActualSpeed(stats) * elapsedTimeSeconds;
 
 		bool nextNode = false;
 
