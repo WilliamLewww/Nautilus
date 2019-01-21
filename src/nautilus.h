@@ -14,6 +14,9 @@ struct Anchor {
 	bool alive = false;
 	bool hint = false;
 
+	bool hooked = false;
+	Vector2* hookedPosition;
+
 	int anchorColor[3] = { 99, 64, 61 };
 	int chainColor[3] = { 102, 94, 90 };
 };

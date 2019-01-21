@@ -57,7 +57,7 @@ void Nautilus::update(float elapsedTimeSeconds) {
 	}
 	else { anchor.hint = false; cancelDredgeLine = false; }
 	if (!anchor.alive && queueDredgeLine && !input.checkKeyDown(SDLK_q)) { anchor.alive = true; queueDredgeLine = false; initializeDredgeLine(input.getMouseXCamera(), input.getMouseYCamera()); }
-	if (anchor.alive) {	castDredgeLine(elapsedTimeSeconds); }
+	if (anchor.alive) {	anchor.hint = false; castDredgeLine(elapsedTimeSeconds); }
 
 	if (!isRooted) { followPath(elapsedTimeSeconds); }
 }
@@ -70,8 +70,8 @@ void Nautilus::initializeDredgeLine(int x, int y) {
 }
 
 void Nautilus::castDredgeLine(float elapsedTimeSeconds) {
-	float movementX = (anchor.anchorDirection.x / (abs(anchor.anchorDirection.x) + abs(anchor.anchorDirection.y))) * (getActualSpeed(stats) * 2.8) * elapsedTimeSeconds;
-	float movementY = (anchor.anchorDirection.y / (abs(anchor.anchorDirection.x) + abs(anchor.anchorDirection.y))) * (getActualSpeed(stats) * 2.8) * elapsedTimeSeconds;
+	float movementX = (anchor.anchorDirection.x / (abs(anchor.anchorDirection.x) + abs(anchor.anchorDirection.y))) * (getActualSpeed(stats) * 4.2) * elapsedTimeSeconds;
+	float movementY = (anchor.anchorDirection.y / (abs(anchor.anchorDirection.x) + abs(anchor.anchorDirection.y))) * (getActualSpeed(stats) * 4.2) * elapsedTimeSeconds;
 
 	anchor.anchorPosition.x += movementX;
 	anchor.anchorPosition.y += movementY;
@@ -113,13 +113,14 @@ void Nautilus::followPath(float elapsedTimeSeconds) {
 }
 
 void Nautilus::draw() {
-	drawDebug();
+	//drawDebug();
 
 	drawing.drawCircleFill(clickPosition, 12, clickColor, clickAlpha);
 	drawing.drawRect(position, width, height);
 
 	if (anchor.hint) {
-		drawing.drawLine(center(), anchor.hintPosition, anchor.chainColor);
+		drawing.drawLine(center(), anchor.hintPosition, anchor.chainColor, 100);
+		drawing.drawRect(anchor.hintPosition - Vector2(anchor.anchorWidth / 2, anchor.anchorHeight / 2), anchor.anchorWidth, anchor.anchorHeight, anchor.anchorColor, 100);
 	}
 
 	if (anchor.alive) {
