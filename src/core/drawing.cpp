@@ -497,9 +497,35 @@ void Drawing::drawCircle(Vector2 position, float radius, int color[3]) {
 	glEnd();
 }
 
+void Drawing::drawCircle(Vector2 position, float radius, int color[3], int alpha) {
+	glBegin(GL_LINE_LOOP);
+	glColor4f(convertColorFloatToRGB(color[0]), convertColorFloatToRGB(color[1]), convertColorFloatToRGB(color[2]), convertColorFloatToRGB(alpha));
+
+	double radians = PI / 180;
+	for (int i = 0; i < 360; i++) {
+		glVertex2d((cos(i * radians)*radius) - (configuration.getScreenWidth() / 2) + position.x, (sin(i * radians)*radius) - (configuration.getScreenHeight() / 2) + position.y);
+	}
+
+	glEnd();
+}
+
 void Drawing::drawCircleFill(Vector2 position, float radius, int color[3]) {
 	glBegin(GL_LINE_LOOP);
 	glColor4f(convertColorFloatToRGB(color[0]), convertColorFloatToRGB(color[1]), convertColorFloatToRGB(color[2]), 1);
+
+	double radians = PI / 180;
+	for (int r = radius; r >= 0; r--) {
+		for (int i = 0; i < 360; i++) {
+			glVertex2d((cos(i * radians)*r) - (configuration.getScreenWidth() / 2) + position.x, (sin(i * radians)*r) - (configuration.getScreenHeight() / 2) + position.y);
+		}
+	}
+
+	glEnd();
+}
+
+void Drawing::drawCircleFill(Vector2 position, float radius, int color[3], int alpha) {
+	glBegin(GL_LINE_LOOP);
+	glColor4f(convertColorFloatToRGB(color[0]), convertColorFloatToRGB(color[1]), convertColorFloatToRGB(color[2]), convertColorFloatToRGB(alpha));
 
 	double radians = PI / 180;
 	for (int r = radius; r >= 0; r--) {

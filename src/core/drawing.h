@@ -47,7 +47,9 @@ public:
 	void drawPolygon(Vector2 position, double width, double height, std::vector<Vector2> vertices, double angle, int color[3], int alpha);
 	void drawCircle(Vector2 position, float radius);
 	void drawCircle(Vector2 position, float radius, int color[3]);
+	void drawCircle(Vector2 position, float radius, int color[3], int alpha);
 	void drawCircleFill(Vector2 position, float radius, int color[3]);
+	void drawCircleFill(Vector2 position, float radius, int color[3], int alpha);
 	void drawTriangle(Vector2 position, int width, int height);
 	void drawTriangle(Vector2 position, int width, int height, double angle);
 };

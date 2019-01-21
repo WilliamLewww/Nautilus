@@ -2,6 +2,7 @@
 
 struct Stats {
 	double health, health_regen;
+	double mana, mana_regen;
 	double attack_damage, attack_speed;
 	double armor, magic_resist;
 	double movement_speed;
@@ -9,6 +10,7 @@ struct Stats {
 
 struct StatsUpgrade {
 	double health, health_regen;
+	double mana, mana_regen;
 	double attack_damage, attack_speed;
 	double armor, magic_resist;
 };

@@ -1,7 +1,9 @@
 #pragma once
+#include <vector>
 #include "core/drawing.h"
 #include "core/timer.h"
 #include "nautilus.h"
+#include "dummy.h"
 
 class World {
 private:
@@ -11,6 +13,7 @@ private:
 	int baseColor[3] = { 63, 137, 63 };
 
 	Nautilus nautilus;
+	std::vector<Dummy> dummyList;
 public:
 	void initialize();
 	void update();
