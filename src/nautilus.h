@@ -25,10 +25,12 @@ struct Anchor {
 
 class Nautilus {
 private:
-	RectangleIndex rectangleIndex;
+	double health, mana;
 
 	Stats stats;
 	StatsUpgrade statsUpgrade;
+
+	RectangleIndex rectangleIndex;
 
 	Vector2 position;
 	int width = 60, height = 75;
@@ -44,10 +46,15 @@ private:
 
 	std::vector<Vector2> pathVertices;
 
+	double timer = 0;
+
+	RectangleIndex* selectedRectangleIndex;
+
 	bool queueDredgeLine = false, cancelDredgeLine = false;
 	Anchor anchor;
 
 	inline Vector2 center() { return Vector2(position.x + (width / 2), position.y + (height / 2)); };
+	inline void resetPath() { pathVertices.clear(); };
 
 	void setupStats();
 
@@ -65,19 +72,17 @@ private:
 
 	void initializeDepthCharge(Vector2* position);
 	void castDepthCharge();
-public:
-	inline bool anchorIsAlive() { return anchor.alive; };
-	inline void anchorSetHook(RectangleIndex* rectangleIndex) { 
-		anchor.rectangleIndex.position = rectangleIndex->position; 
-		anchor.rectangleIndex.width = rectangleIndex->width;
-		anchor.rectangleIndex.height = rectangleIndex->height;
 
-		anchor.hooked = true; 
-	};
+	void updateTimer();
+public:
+	inline void setSelectedEntity(RectangleIndex* selectedRectangleIndex) {  this->selectedRectangleIndex = selectedRectangleIndex; };
+	inline void resetSelectedEntity() { this->selectedRectangleIndex = nullptr; }
+
+	inline bool anchorIsAlive() { return anchor.alive; };
+	void anchorSetHook(RectangleIndex* rectangleIndex);
 	bool checkAnchorCollision(Vector2 position, int width, int height);
 
 	void initialize();
-	void resetPath();
 
 	void update(float elapsedTimeSeconds);
 

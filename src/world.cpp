@@ -20,6 +20,17 @@ void World::update() {
 			}
 		}
 	}
+
+	if (input.getRightButtonPress()) {
+		bool selectedEntity = false;
+		for (Dummy& dummy : dummyList) {
+			if (checkMouseInRectangleIndex(dummy.getRectangleIndex())) {
+				nautilus.setSelectedEntity(dummy.getRectangleIndexAddr());
+				selectedEntity = true;
+			}
+		}
+		if (selectedEntity == false) { nautilus.resetSelectedEntity(); }
+	}
 }
 
 void World::draw() {

@@ -1,5 +1,13 @@
 #include "nautilus.h"
 
+void Nautilus::anchorSetHook(RectangleIndex* rectangleIndex) { 
+		anchor.rectangleIndex.position = rectangleIndex->position; 
+		anchor.rectangleIndex.width = rectangleIndex->width;
+		anchor.rectangleIndex.height = rectangleIndex->height;
+
+		anchor.hooked = true; 
+	};
+
 bool Nautilus::checkAnchorCollision(Vector2 position, int width, int height) {
 	if (anchor.position.x + anchor.width >= position.x &&
 		anchor.position.x <= position.x + width &&
@@ -16,10 +24,8 @@ void Nautilus::initialize() {
 	rectangleIndex = createRectangleIndex(&position, width, height);
 
 	setupStats();
-}
-
-void Nautilus::resetPath() {
-	pathVertices.clear();
+	health = stats.health;
+	mana = stats.mana;
 }
 
 void Nautilus::setupStats() {
@@ -77,11 +83,32 @@ void Nautilus::update(float elapsedTimeSeconds) {
 	if (anchor.alive) {	anchor.hint = false; castDredgeLine(elapsedTimeSeconds); }
 
 	if (!isRooted) { followPath(elapsedTimeSeconds); }
+
+	if (timer <= 1) {
+		timer += elapsedTimeSeconds;
+	}
+	else {
+		updateTimer();
+		timer = 0.0;
+	}
+}
+
+void Nautilus::updateTimer() {
+	if (health < stats.health) {
+		if (health + stats.health_regen > stats.health) { health = stats.health; }
+		else { health += stats.health_regen; }
+	}
+
+	if (mana < stats.mana) {
+		if (mana + stats.mana_regen > stats.mana) { mana = stats.mana; }
+		else { mana += stats.mana_regen; }
+	}
 }
 
 void Nautilus::initializeDredgeLine(int x, int y) {
 	isRooted = true;
 	resetPath();
+
 	anchor.position = Vector2(center().x - (anchor.width / 2), center().y - (anchor.height / 2));
 	anchor.direction = Vector2(x, y) - center();
 	anchor.distance = 0;
@@ -143,23 +170,33 @@ void Nautilus::createPath(int x, int y) {
 }
 
 void Nautilus::followPath(float elapsedTimeSeconds) {
-	if (pathVertices.size() > 1) {
-		Vector2 difference = pathVertices[1] - pathVertices[0];
+	if (selectedRectangleIndex == nullptr) {
+		if (pathVertices.size() > 1) {
+			Vector2 difference = pathVertices[1] - pathVertices[0];
 
-		position.x += (difference.x / (abs(difference.x) + abs(difference.y))) * getActualSpeed(stats) * elapsedTimeSeconds;
-		position.y += (difference.y / (abs(difference.x) + abs(difference.y))) * getActualSpeed(stats) * elapsedTimeSeconds;
+			position.x += (difference.x / (abs(difference.x) + abs(difference.y))) * getActualSpeed(stats) * elapsedTimeSeconds;
+			position.y += (difference.y / (abs(difference.x) + abs(difference.y))) * getActualSpeed(stats) * elapsedTimeSeconds;
 
-		bool nextNode = false;
+			bool nextNode = false;
 
-		if (!nextNode && difference.x > 0 && difference.y > 0) { if (center().x > pathVertices[1].x && center().y > pathVertices[1].y) { nextNode = true; pathVertices.clear(); }}
-		if (!nextNode && difference.x > 0 && difference.y < 0) { if (center().x > pathVertices[1].x && center().y < pathVertices[1].y) { nextNode = true; pathVertices.clear(); }}
-		if (!nextNode && difference.x < 0 && difference.y > 0) { if (center().x < pathVertices[1].x && center().y > pathVertices[1].y) { nextNode = true; pathVertices.clear(); }}
-		if (!nextNode && difference.x < 0 && difference.y < 0) { if (center().x < pathVertices[1].x && center().y < pathVertices[1].y) { nextNode = true; pathVertices.clear(); }}
-	
-		if (!nextNode && difference.x == 0 && difference.y > 0) { if (center().x == pathVertices[1].x && center().y > pathVertices[1].y) { nextNode = true; pathVertices.clear(); }}
-		if (!nextNode && difference.x == 0 && difference.y < 0) { if (center().x == pathVertices[1].x && center().y < pathVertices[1].y) { nextNode = true; pathVertices.clear(); }}
-		if (!nextNode && difference.x > 0 && difference.y == 0) { if (center().x > pathVertices[1].x && center().y == pathVertices[1].y) { nextNode = true; pathVertices.clear(); }}
-		if (!nextNode && difference.x < 0 && difference.y == 0) { if (center().x < pathVertices[1].x && center().y == pathVertices[1].y) { nextNode = true; pathVertices.clear(); }}
+			if (!nextNode && difference.x > 0 && difference.y > 0) { if (center().x > pathVertices[1].x && center().y > pathVertices[1].y) { nextNode = true; pathVertices.clear(); }}
+			if (!nextNode && difference.x > 0 && difference.y < 0) { if (center().x > pathVertices[1].x && center().y < pathVertices[1].y) { nextNode = true; pathVertices.clear(); }}
+			if (!nextNode && difference.x < 0 && difference.y > 0) { if (center().x < pathVertices[1].x && center().y > pathVertices[1].y) { nextNode = true; pathVertices.clear(); }}
+			if (!nextNode && difference.x < 0 && difference.y < 0) { if (center().x < pathVertices[1].x && center().y < pathVertices[1].y) { nextNode = true; pathVertices.clear(); }}
+		
+			if (!nextNode && difference.x == 0 && difference.y > 0) { if (center().x == pathVertices[1].x && center().y > pathVertices[1].y) { nextNode = true; pathVertices.clear(); }}
+			if (!nextNode && difference.x == 0 && difference.y < 0) { if (center().x == pathVertices[1].x && center().y < pathVertices[1].y) { nextNode = true; pathVertices.clear(); }}
+			if (!nextNode && difference.x > 0 && difference.y == 0) { if (center().x > pathVertices[1].x && center().y == pathVertices[1].y) { nextNode = true; pathVertices.clear(); }}
+			if (!nextNode && difference.x < 0 && difference.y == 0) { if (center().x < pathVertices[1].x && center().y == pathVertices[1].y) { nextNode = true; pathVertices.clear(); }}
+		}
+	}
+	else {
+		Vector2 difference = Vector2(selectedRectangleIndex->position->x + (selectedRectangleIndex->width / 2), selectedRectangleIndex->position->y + (selectedRectangleIndex->height / 2)) - center();
+		
+		if (abs(difference.x) + abs(difference.y) > 100) {
+			position.x += (difference.x / (abs(difference.x) + abs(difference.y))) * getActualSpeed(stats) * elapsedTimeSeconds;
+			position.y += (difference.y / (abs(difference.x) + abs(difference.y))) * getActualSpeed(stats) * elapsedTimeSeconds;
+		}
 	}
 }
 

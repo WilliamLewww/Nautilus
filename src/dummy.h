@@ -14,6 +14,7 @@ public:
 	Dummy(Vector2 position, int width, int height);
 
 	inline RectangleIndex* getRectangleIndexAddr() { return &rectangleIndex; };
+	inline RectangleIndex getRectangleIndex() { return rectangleIndex; };
 
 	inline Vector2 getPosition() { return position; };
 	inline int getWidth() { return width; };
