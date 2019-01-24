@@ -7,15 +7,17 @@
 #include "stats.h"
 
 struct Anchor {
-	Vector2 anchorPosition, anchorDirection, hintPosition;
-	int anchorWidth = 40, anchorHeight = 40;
+	Vector2 position, direction, hintPosition;
+	int width = 40, height = 40;
 	float distance = 0;
 
 	bool alive = false;
 	bool hint = false;
 
 	bool hooked = false;
+	bool bounce = false;
 	Vector2* hookedPosition;
+	int hookedWidth, hookedHeight;
 
 	int anchorColor[3] = { 99, 64, 61 };
 	int chainColor[3] = { 102, 94, 90 };
@@ -62,7 +64,18 @@ private:
 	void initializeDepthCharge(Vector2* position);
 	void castDepthCharge();
 public:
+	inline bool anchorIsAlive() { return anchor.alive; };
+	inline void anchorSetHook(Vector2* hookedPosition, int hookedWidth, int hookedHeight) { 
+		anchor.hookedPosition = hookedPosition; 
+		anchor.hookedWidth = hookedWidth;
+		anchor.hookedHeight = hookedHeight;
+
+		anchor.hooked = true; 
+	};
+	bool checkAnchorCollision(Vector2 position, int width, int height);
+
 	void initialize();
+	void resetPath();
 
 	void update(float elapsedTimeSeconds);
 
