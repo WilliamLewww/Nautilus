@@ -1,8 +1,11 @@
 #pragma once
 #include "core/drawing.h"
+#include "rectangle_index.h"
 
 class Dummy {
 private:
+	RectangleIndex rectangleIndex;
+
 	Vector2 position;
 	int width, height;
 
@@ -10,7 +13,8 @@ private:
 public:
 	Dummy(Vector2 position, int width, int height);
 
-	inline Vector2* getPositionAddr() { return &position; };
+	inline RectangleIndex* getRectangleIndexAddr() { return &rectangleIndex; };
+
 	inline Vector2 getPosition() { return position; };
 	inline int getWidth() { return width; };
 	inline int getHeight() { return height; };

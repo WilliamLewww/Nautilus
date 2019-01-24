@@ -13,6 +13,8 @@ bool Nautilus::checkAnchorCollision(Vector2 position, int width, int height) {
 
 void Nautilus::initialize() {
 	position = Vector2(250, 250);
+	rectangleIndex = createRectangleIndex(&position, width, height);
+
 	setupStats();
 }
 
@@ -87,15 +89,15 @@ void Nautilus::initializeDredgeLine(int x, int y) {
 
 void Nautilus::castDredgeLine(float elapsedTimeSeconds) {
 	if (anchor.hooked) {
-		Vector2 difference = Vector2(anchor.hookedPosition->x + (anchor.hookedWidth / 2), anchor.hookedPosition->y + (anchor.hookedHeight / 2)) - center();
+		Vector2 difference = Vector2(anchor.rectangleIndex.position->x + (anchor.rectangleIndex.width / 2), anchor.rectangleIndex.position->y + (anchor.rectangleIndex.height / 2)) - center();
 		
 		if (!anchor.bounce) {
 			position.x += (difference.x / (abs(difference.x) + abs(difference.y))) * 682.5 * elapsedTimeSeconds;
 			position.y += (difference.y / (abs(difference.x) + abs(difference.y))) * 682.5 * elapsedTimeSeconds;
-			anchor.hookedPosition->x -= (difference.x / (abs(difference.x) + abs(difference.y))) * 682.5 * elapsedTimeSeconds;
-			anchor.hookedPosition->y -= (difference.y / (abs(difference.x) + abs(difference.y))) * 682.5 * elapsedTimeSeconds;
-			anchor.position.x = anchor.hookedPosition->x + (anchor.hookedWidth / 2) - (anchor.width / 2);
-			anchor.position.y = anchor.hookedPosition->y + (anchor.hookedHeight / 2) - (anchor.height / 2);
+			anchor.rectangleIndex.position->x -= (difference.x / (abs(difference.x) + abs(difference.y))) * 682.5 * elapsedTimeSeconds;
+			anchor.rectangleIndex.position->y -= (difference.y / (abs(difference.x) + abs(difference.y))) * 682.5 * elapsedTimeSeconds;
+			anchor.position.x = anchor.rectangleIndex.position->x + (anchor.rectangleIndex.width / 2) - (anchor.width / 2);
+			anchor.position.y = anchor.rectangleIndex.position->y + (anchor.rectangleIndex.height / 2) - (anchor.height / 2);
 		
 			if (abs(difference.x) + abs(difference.y) < 75) {
 				anchor.bounce = true;
@@ -104,10 +106,10 @@ void Nautilus::castDredgeLine(float elapsedTimeSeconds) {
 		else {
 			position.x -= (difference.x / (abs(difference.x) + abs(difference.y))) * 227.5 * elapsedTimeSeconds;
 			position.y -= (difference.y / (abs(difference.x) + abs(difference.y))) * 227.5 * elapsedTimeSeconds;
-			anchor.hookedPosition->x += (difference.x / (abs(difference.x) + abs(difference.y))) * 227.5 * elapsedTimeSeconds;
-			anchor.hookedPosition->y += (difference.y / (abs(difference.x) + abs(difference.y))) * 227.5 * elapsedTimeSeconds;
-			anchor.position.x = anchor.hookedPosition->x + (anchor.hookedWidth / 2) - (anchor.width / 2);
-			anchor.position.y = anchor.hookedPosition->y + (anchor.hookedHeight / 2) - (anchor.height / 2);
+			anchor.rectangleIndex.position->x += (difference.x / (abs(difference.x) + abs(difference.y))) * 227.5 * elapsedTimeSeconds;
+			anchor.rectangleIndex.position->y += (difference.y / (abs(difference.x) + abs(difference.y))) * 227.5 * elapsedTimeSeconds;
+			anchor.position.x = anchor.rectangleIndex.position->x + (anchor.rectangleIndex.width / 2) - (anchor.width / 2);
+			anchor.position.y = anchor.rectangleIndex.position->y + (anchor.rectangleIndex.height / 2) - (anchor.height / 2);
 
 			if (abs(difference.x) + abs(difference.y) > 100) {
 				anchor.bounce = false;
@@ -169,6 +171,11 @@ void Nautilus::draw() {
 
 	if (anchor.hint) {
 		drawing.drawLine(center(), anchor.hintPosition, anchor.chainColor, 100);
+		drawing.drawLine(center(), anchor.hintPosition - Vector2( anchor.width / 2,  anchor.height / 2), anchor.chainColor, 100);
+		drawing.drawLine(center(), anchor.hintPosition - Vector2(-anchor.width / 2,  anchor.height / 2), anchor.chainColor, 100);
+		drawing.drawLine(center(), anchor.hintPosition - Vector2( anchor.width / 2, -anchor.height / 2), anchor.chainColor, 100);
+		drawing.drawLine(center(), anchor.hintPosition - Vector2(-anchor.width / 2, -anchor.height / 2), anchor.chainColor, 100);
+
 		drawing.drawRect(anchor.hintPosition - Vector2(anchor.width / 2, anchor.height / 2), anchor.width, anchor.height, anchor.anchorColor, 100);
 	}
 

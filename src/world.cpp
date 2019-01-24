@@ -16,7 +16,7 @@ void World::update() {
 	for (Dummy& dummy : dummyList) {
 		if (nautilus.anchorIsAlive()) {
 			if (nautilus.checkAnchorCollision(dummy.getPosition(), dummy.getWidth(), dummy.getHeight())) {
-				nautilus.anchorSetHook(dummy.getPositionAddr(), dummy.getWidth(), dummy.getHeight());
+				nautilus.anchorSetHook(dummy.getRectangleIndexAddr());
 			}
 		}
 	}

@@ -4,11 +4,12 @@
 #include "core/drawing.h"
 #include "core/vector2.h"
 #include "core/input.h"
+#include "rectangle_index.h"
 #include "stats.h"
 
 struct Anchor {
 	Vector2 position, direction, hintPosition;
-	int width = 40, height = 40;
+	int width = 50, height = 50;
 	float distance = 0;
 
 	bool alive = false;
@@ -16,8 +17,7 @@ struct Anchor {
 
 	bool hooked = false;
 	bool bounce = false;
-	Vector2* hookedPosition;
-	int hookedWidth, hookedHeight;
+	RectangleIndex rectangleIndex;
 
 	int anchorColor[3] = { 99, 64, 61 };
 	int chainColor[3] = { 102, 94, 90 };
@@ -25,6 +25,8 @@ struct Anchor {
 
 class Nautilus {
 private:
+	RectangleIndex rectangleIndex;
+
 	Stats stats;
 	StatsUpgrade statsUpgrade;
 
@@ -65,10 +67,10 @@ private:
 	void castDepthCharge();
 public:
 	inline bool anchorIsAlive() { return anchor.alive; };
-	inline void anchorSetHook(Vector2* hookedPosition, int hookedWidth, int hookedHeight) { 
-		anchor.hookedPosition = hookedPosition; 
-		anchor.hookedWidth = hookedWidth;
-		anchor.hookedHeight = hookedHeight;
+	inline void anchorSetHook(RectangleIndex* rectangleIndex) { 
+		anchor.rectangleIndex.position = rectangleIndex->position; 
+		anchor.rectangleIndex.width = rectangleIndex->width;
+		anchor.rectangleIndex.height = rectangleIndex->height;
 
 		anchor.hooked = true; 
 	};
