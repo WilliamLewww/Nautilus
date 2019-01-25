@@ -5,7 +5,7 @@ Dummy::Dummy(Vector2 position, int width, int height) {
 	this->width = width;
 	this->height = height;
 
-	rectangleIndex = createRectangleIndex(&this->position, this->width, this->height);
+	rectangleIndex = createRectangleIndex(&this->position, &this->width, &this->height);
 }
 
 void Dummy::update() {

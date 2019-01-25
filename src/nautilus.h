@@ -7,6 +7,36 @@
 #include "rectangle_index.h"
 #include "stats.h"
 
+struct NautilusCooldownsParent {
+	double staggering_blow[4] = { 9, 8, 7, 6 };
+	double dredge_line[5] = { 14, 13, 12, 11, 10 };
+	double titans_wrath[1] = { 12 };
+	double riptide[5] = { 7, 6.5, 6, 5.5, 5 };
+	double depth_charge[3] = { 120, 100, 80 };
+};
+
+struct NautilusCooldowns {
+	double staggering_blow;
+	bool can_staggering_blow;
+	int staggering_blow_level = 0;
+
+	double dredge_line;
+	bool can_dredge_line;
+	int dredge_line_level = 0;
+
+	double titans_wrath;
+	bool can_titans_wrath;
+	int titans_wrath_level = 0;
+
+	double riptide;
+	bool can_riptide;
+	int riptide_level = 0;
+
+	double depth_charge;
+	bool can_depth_charge;
+	int depth_charge_level = 0;
+};
+
 struct Anchor {
 	Vector2 position, direction, hintPosition;
 	int width = 50, height = 50;
@@ -26,6 +56,9 @@ struct Anchor {
 class Nautilus {
 private:
 	double health, mana;
+
+	NautilusCooldowns cooldowns;
+	NautilusCooldownsParent cooldownsParent;
 
 	Stats stats;
 	StatsUpgrade statsUpgrade;
@@ -47,6 +80,7 @@ private:
 	std::vector<Vector2> pathVertices;
 
 	double timer = 0;
+	double dredgeLineTimer = 0;
 
 	RectangleIndex* selectedRectangleIndex;
 
@@ -57,6 +91,8 @@ private:
 	inline void resetPath() { pathVertices.clear(); };
 
 	void setupStats();
+	void setupCooldowns();
+	void checkCooldowns(float elapsedTimeSeconds);
 
 	void createPath(int x, int y);
 	void followPath(float elapsedTimeSeconds);
@@ -73,7 +109,7 @@ private:
 	void initializeDepthCharge(Vector2* position);
 	void castDepthCharge();
 
-	void updateTimer();
+	void updateTimer(float elapsedTimeSeconds);
 public:
 	inline void setSelectedEntity(RectangleIndex* selectedRectangleIndex) {  this->selectedRectangleIndex = selectedRectangleIndex; };
 	inline void resetSelectedEntity() { this->selectedRectangleIndex = nullptr; }

@@ -21,9 +21,10 @@ bool Nautilus::checkAnchorCollision(Vector2 position, int width, int height) {
 
 void Nautilus::initialize() {
 	position = Vector2(250, 250);
-	rectangleIndex = createRectangleIndex(&position, width, height);
+	rectangleIndex = createRectangleIndex(&position, &width, &height);
 
 	setupStats();
+	setupCooldowns();
 	health = stats.health;
 	mana = stats.mana;
 }
@@ -49,7 +50,34 @@ void Nautilus::setupStats() {
 	statsUpgrade.magic_resist		= 1.25;
 }
 
+void Nautilus::setupCooldowns() {
+	cooldowns.staggering_blow = cooldownsParent.staggering_blow[0];
+	cooldowns.dredge_line = cooldownsParent.dredge_line[0];
+	cooldowns.titans_wrath = cooldownsParent.titans_wrath[0];
+	cooldowns.riptide = cooldownsParent.riptide[0];
+	cooldowns.depth_charge = cooldownsParent.depth_charge[0];
+}
+
+void Nautilus::checkCooldowns(float elapsedTimeSeconds) {
+	if (cooldowns.staggering_blow >= cooldownsParent.staggering_blow[cooldowns.staggering_blow_level]) { cooldowns.can_staggering_blow = true; }
+	else { cooldowns.staggering_blow += elapsedTimeSeconds; }
+	
+	if (cooldowns.dredge_line >= cooldownsParent.dredge_line[cooldowns.dredge_line_level]) { cooldowns.can_dredge_line = true; }
+	else { cooldowns.dredge_line += elapsedTimeSeconds; }
+	
+	if (cooldowns.titans_wrath >= cooldownsParent.titans_wrath[cooldowns.titans_wrath_level]) { cooldowns.can_titans_wrath = true; }
+	else { cooldowns.titans_wrath += elapsedTimeSeconds; }
+	
+	if (cooldowns.riptide >= cooldownsParent.riptide[cooldowns.riptide_level]) { cooldowns.can_riptide = true; }
+	else { cooldowns.riptide += elapsedTimeSeconds; }
+	
+	if (cooldowns.depth_charge >= cooldownsParent.depth_charge[cooldowns.depth_charge_level]) { cooldowns.can_depth_charge = true; }
+	else { cooldowns.depth_charge += elapsedTimeSeconds; }
+}
+
 void Nautilus::update(float elapsedTimeSeconds) {
+	checkCooldowns(elapsedTimeSeconds);
+
 	if (input.getRightButtonPress()) {
 		if (abs(center().x - input.getMouseXCamera()) > 3 || abs(center().y - input.getMouseYCamera()) > 3) {
 			createPath(input.getMouseXCamera(), input.getMouseYCamera());
@@ -83,25 +111,24 @@ void Nautilus::update(float elapsedTimeSeconds) {
 	if (anchor.alive) {	anchor.hint = false; castDredgeLine(elapsedTimeSeconds); }
 
 	if (!isRooted) { followPath(elapsedTimeSeconds); }
+	updateTimer(elapsedTimeSeconds);
+}
 
+void Nautilus::updateTimer(float elapsedTimeSeconds) {
 	if (timer <= 1) {
 		timer += elapsedTimeSeconds;
 	}
 	else {
-		updateTimer();
+		if (health < stats.health) {
+			if (health + stats.health_regen > stats.health) { health = stats.health; }
+			else { health += stats.health_regen; }
+		}
+
+		if (mana < stats.mana) {
+			if (mana + stats.mana_regen > stats.mana) { mana = stats.mana; }
+			else { mana += stats.mana_regen; }
+		}
 		timer = 0.0;
-	}
-}
-
-void Nautilus::updateTimer() {
-	if (health < stats.health) {
-		if (health + stats.health_regen > stats.health) { health = stats.health; }
-		else { health += stats.health_regen; }
-	}
-
-	if (mana < stats.mana) {
-		if (mana + stats.mana_regen > stats.mana) { mana = stats.mana; }
-		else { mana += stats.mana_regen; }
 	}
 }
 
@@ -116,33 +143,34 @@ void Nautilus::initializeDredgeLine(int x, int y) {
 
 void Nautilus::castDredgeLine(float elapsedTimeSeconds) {
 	if (anchor.hooked) {
-		Vector2 difference = Vector2(anchor.rectangleIndex.position->x + (anchor.rectangleIndex.width / 2), anchor.rectangleIndex.position->y + (anchor.rectangleIndex.height / 2)) - center();
+		Vector2 difference = Vector2(anchor.rectangleIndex.position->x + (*anchor.rectangleIndex.width / 2), anchor.rectangleIndex.position->y + (*anchor.rectangleIndex.height / 2)) - center();
 		
 		if (!anchor.bounce) {
 			position.x += (difference.x / (abs(difference.x) + abs(difference.y))) * 682.5 * elapsedTimeSeconds;
 			position.y += (difference.y / (abs(difference.x) + abs(difference.y))) * 682.5 * elapsedTimeSeconds;
 			anchor.rectangleIndex.position->x -= (difference.x / (abs(difference.x) + abs(difference.y))) * 682.5 * elapsedTimeSeconds;
 			anchor.rectangleIndex.position->y -= (difference.y / (abs(difference.x) + abs(difference.y))) * 682.5 * elapsedTimeSeconds;
-			anchor.position.x = anchor.rectangleIndex.position->x + (anchor.rectangleIndex.width / 2) - (anchor.width / 2);
-			anchor.position.y = anchor.rectangleIndex.position->y + (anchor.rectangleIndex.height / 2) - (anchor.height / 2);
+			anchor.position.x = anchor.rectangleIndex.position->x + (*anchor.rectangleIndex.width / 2) - (anchor.width / 2);
+			anchor.position.y = anchor.rectangleIndex.position->y + (*anchor.rectangleIndex.height / 2) - (anchor.height / 2);
 		
-			if (abs(difference.x) + abs(difference.y) < 75) {
+			if (abs(difference.x) + abs(difference.y) < 50) {
 				anchor.bounce = true;
 			}
 		}
 		else {
-			position.x -= (difference.x / (abs(difference.x) + abs(difference.y))) * 227.5 * elapsedTimeSeconds;
-			position.y -= (difference.y / (abs(difference.x) + abs(difference.y))) * 227.5 * elapsedTimeSeconds;
-			anchor.rectangleIndex.position->x += (difference.x / (abs(difference.x) + abs(difference.y))) * 227.5 * elapsedTimeSeconds;
-			anchor.rectangleIndex.position->y += (difference.y / (abs(difference.x) + abs(difference.y))) * 227.5 * elapsedTimeSeconds;
-			anchor.position.x = anchor.rectangleIndex.position->x + (anchor.rectangleIndex.width / 2) - (anchor.width / 2);
-			anchor.position.y = anchor.rectangleIndex.position->y + (anchor.rectangleIndex.height / 2) - (anchor.height / 2);
-
-			if (abs(difference.x) + abs(difference.y) > 100) {
+			if (abs(difference.x) + abs(difference.y) > 75) {
 				anchor.bounce = false;
 				anchor.alive = false;
 				anchor.hooked = false;
 				isRooted = false;
+			}
+			else {
+				position.x -= (difference.x / (abs(difference.x) + abs(difference.y))) * 227.5 * elapsedTimeSeconds;
+				position.y -= (difference.y / (abs(difference.x) + abs(difference.y))) * 227.5 * elapsedTimeSeconds;
+				anchor.rectangleIndex.position->x += (difference.x / (abs(difference.x) + abs(difference.y))) * 227.5 * elapsedTimeSeconds;
+				anchor.rectangleIndex.position->y += (difference.y / (abs(difference.x) + abs(difference.y))) * 227.5 * elapsedTimeSeconds;
+				anchor.position.x = anchor.rectangleIndex.position->x + (*anchor.rectangleIndex.width / 2) - (anchor.width / 2);
+				anchor.position.y = anchor.rectangleIndex.position->y + (*anchor.rectangleIndex.height / 2) - (anchor.height / 2);
 			}
 		}
 	}
@@ -191,9 +219,9 @@ void Nautilus::followPath(float elapsedTimeSeconds) {
 		}
 	}
 	else {
-		Vector2 difference = Vector2(selectedRectangleIndex->position->x + (selectedRectangleIndex->width / 2), selectedRectangleIndex->position->y + (selectedRectangleIndex->height / 2)) - center();
+		Vector2 difference = Vector2(selectedRectangleIndex->position->x + (*selectedRectangleIndex->width / 2), selectedRectangleIndex->position->y + (*selectedRectangleIndex->height / 2)) - center();
 		
-		if (abs(difference.x) + abs(difference.y) > 100) {
+		if (abs(difference.x) + abs(difference.y) > 75) {
 			position.x += (difference.x / (abs(difference.x) + abs(difference.y))) * getActualSpeed(stats) * elapsedTimeSeconds;
 			position.y += (difference.y / (abs(difference.x) + abs(difference.y))) * getActualSpeed(stats) * elapsedTimeSeconds;
 		}

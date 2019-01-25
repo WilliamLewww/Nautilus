@@ -3,9 +3,9 @@
 #include "core/input.h"
 
 struct RectangleIndex {
-	Vector2* position;
-	int width, height;
+	Vector2 *position;
+	int *width, *height;
 };
 
-RectangleIndex createRectangleIndex(Vector2* position, int width, int height);
+RectangleIndex createRectangleIndex(Vector2* position, int* width, int* height);
 bool checkMouseInRectangleIndex(RectangleIndex rectangleIndex);
