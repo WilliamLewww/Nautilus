@@ -237,7 +237,7 @@ void Nautilus::followPath(float elapsedTimeSeconds) {
 	else {
 		Vector2 difference = Vector2(selectedRectangleIndex->position->x + (*selectedRectangleIndex->width / 2), selectedRectangleIndex->position->y + (*selectedRectangleIndex->height / 2)) - center();
 		
-		if (abs(difference.x) + abs(difference.y) > 75) {
+		if (abs(difference.x) + abs(difference.y) >= 100) {
 			position.x += (difference.x / (abs(difference.x) + abs(difference.y))) * getActualSpeed(stats) * elapsedTimeSeconds;
 			position.y += (difference.y / (abs(difference.x) + abs(difference.y))) * getActualSpeed(stats) * elapsedTimeSeconds;
 		}
