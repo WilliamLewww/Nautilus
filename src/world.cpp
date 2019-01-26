@@ -10,7 +10,7 @@ void World::initialize() {
 }
 
 void World::update() {
-	for (Dummy dummy : dummyList) { dummy.update(); }
+	for (Dummy dummy : dummyList) { dummy.update(timer.getTimeSeconds()); }
 	nautilus.update(timer.getTimeSeconds());
 
 	for (Dummy& dummy : dummyList) {

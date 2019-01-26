@@ -7,6 +7,12 @@
 #include "rectangle_index.h"
 #include "stats.h"
 
+struct NautilusDurationsParent {
+	double auto_attack = 0.21;
+	double staggering_blow[5] = { 0.5, 0.75, 1, 1.25, 1.5 };
+	double depth_charge[3] = { 1, 1.5, 2 };
+};
+
 struct NautilusCooldownsParent {
 	double staggering_blow[4] = { 9, 8, 7, 6 };
 	double dredge_line[5] = { 14, 13, 12, 11, 10 };
@@ -16,6 +22,9 @@ struct NautilusCooldownsParent {
 };
 
 struct NautilusCooldowns {
+	double auto_attack;
+	bool can_auto_attack;
+
 	double staggering_blow;
 	bool can_staggering_blow;
 	int staggering_blow_level = 0;
@@ -57,6 +66,8 @@ class Nautilus {
 private:
 	double health, mana;
 
+	NautilusDurationsParent durationsParent;
+
 	NautilusCooldowns cooldowns;
 	NautilusCooldownsParent cooldownsParent;
 
@@ -71,9 +82,10 @@ private:
 	Vector2 clickPosition;
 	int clickAlpha = 0;
 
-	bool isRooted = false;
+	double isRooted = 0;
 
 	int color[3] = { 119, 84, 81 };
+	int rootColor[3] = { 89, 54, 51 };
 	int pathColor[3] = { 92, 185, 196 };
 	int clickColor[3] = { 0, 0, 0 };
 
@@ -89,6 +101,7 @@ private:
 
 	inline Vector2 center() { return Vector2(position.x + (width / 2), position.y + (height / 2)); };
 	inline void resetPath() { pathVertices.clear(); };
+	inline void resetRoot() { isRooted = 0; };
 
 	void setupStats();
 	void setupCooldowns();
@@ -96,6 +109,7 @@ private:
 
 	void createPath(int x, int y);
 	void followPath(float elapsedTimeSeconds);
+	void autoAttack(float elapsedTimeSeconds);
 
 	void initializeDredgeLine(int x, int y);
 	void castDredgeLine(float elapsedTimeSeconds);

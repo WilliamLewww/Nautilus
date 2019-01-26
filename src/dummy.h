@@ -9,6 +9,9 @@ private:
 	Vector2 position;
 	int width, height;
 
+	double isRooted;
+	double health, mana;
+
 	int color[3] = { 140, 87, 37 };
 public:
 	Dummy(Vector2 position, int width, int height);
@@ -20,6 +23,6 @@ public:
 	inline int getWidth() { return width; };
 	inline int getHeight() { return height; };
 
-	void update();
+	void update(float elapsedTimeSeconds);
 	void draw();
 };

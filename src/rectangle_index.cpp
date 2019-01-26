@@ -1,10 +1,13 @@
 #include "rectangle_index.h"
 
-RectangleIndex createRectangleIndex(Vector2* position, int* width, int* height) {
+RectangleIndex createRectangleIndex(Vector2* position, int* width, int* height, double* isRooted, double* health, double* mana) {
 	RectangleIndex index;
 	index.position = position;
 	index.width = width;
 	index.height = height;
+	index.isRooted = isRooted;
+	index.health = health;
+	index.mana = mana;
 
 	return index;
 }

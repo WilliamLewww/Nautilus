@@ -21,7 +21,7 @@ bool Nautilus::checkAnchorCollision(Vector2 position, int width, int height) {
 
 void Nautilus::initialize() {
 	position = Vector2(250, 250);
-	rectangleIndex = createRectangleIndex(&position, &width, &height);
+	rectangleIndex = createRectangleIndex(&position, &width, &height, &isRooted, &health, &mana);
 
 	setupStats();
 	setupCooldowns();
@@ -51,7 +51,9 @@ void Nautilus::setupStats() {
 }
 
 void Nautilus::setupCooldowns() {
+	cooldowns.auto_attack = (1.0 / stats.attack_speed);
 	cooldowns.staggering_blow = cooldownsParent.staggering_blow[0];
+
 	cooldowns.dredge_line = cooldownsParent.dredge_line[0];
 	cooldowns.titans_wrath = cooldownsParent.titans_wrath[0];
 	cooldowns.riptide = cooldownsParent.riptide[0];
@@ -59,6 +61,9 @@ void Nautilus::setupCooldowns() {
 }
 
 void Nautilus::checkCooldowns(float elapsedTimeSeconds) {
+	if (cooldowns.auto_attack >= (1.0 / stats.attack_speed)) { cooldowns.can_auto_attack = true; }
+	else { cooldowns.auto_attack += elapsedTimeSeconds; }
+
 	if (cooldowns.staggering_blow >= cooldownsParent.staggering_blow[cooldowns.staggering_blow_level]) { cooldowns.can_staggering_blow = true; }
 	else { cooldowns.staggering_blow += elapsedTimeSeconds; }
 	
@@ -92,7 +97,7 @@ void Nautilus::update(float elapsedTimeSeconds) {
 		else { clickAlpha -= 25; }
 	}
 
-	if (input.checkKeyDown(SDLK_q)) { 
+	if (input.checkKeyDown(SDLK_q) && cooldowns.can_dredge_line) { 
 		if (input.getRightButtonPress()) {
 			queueDredgeLine = false;
 			cancelDredgeLine = true;
@@ -110,7 +115,16 @@ void Nautilus::update(float elapsedTimeSeconds) {
 	if (!anchor.alive && queueDredgeLine && !input.checkKeyDown(SDLK_q)) { anchor.alive = true; queueDredgeLine = false; initializeDredgeLine(input.getMouseXCamera(), input.getMouseYCamera()); }
 	if (anchor.alive) {	anchor.hint = false; castDredgeLine(elapsedTimeSeconds); }
 
-	if (!isRooted) { followPath(elapsedTimeSeconds); }
+	if (isRooted == 0) { 
+		followPath(elapsedTimeSeconds);
+		autoAttack(elapsedTimeSeconds);
+	}
+	else {
+		if (isRooted > 0) {
+			if (isRooted - elapsedTimeSeconds <= 0) { isRooted = 0; }
+			else { isRooted -= elapsedTimeSeconds; }
+		}
+	}
 	updateTimer(elapsedTimeSeconds);
 }
 
@@ -133,8 +147,10 @@ void Nautilus::updateTimer(float elapsedTimeSeconds) {
 }
 
 void Nautilus::initializeDredgeLine(int x, int y) {
-	isRooted = true;
+	isRooted = -1;
 	resetPath();
+	cooldowns.can_dredge_line = false;
+	cooldowns.dredge_line = 0.0;
 
 	anchor.position = Vector2(center().x - (anchor.width / 2), center().y - (anchor.height / 2));
 	anchor.direction = Vector2(x, y) - center();
@@ -162,7 +178,7 @@ void Nautilus::castDredgeLine(float elapsedTimeSeconds) {
 				anchor.bounce = false;
 				anchor.alive = false;
 				anchor.hooked = false;
-				isRooted = false;
+				resetRoot();
 			}
 			else {
 				position.x -= (difference.x / (abs(difference.x) + abs(difference.y))) * 227.5 * elapsedTimeSeconds;
@@ -185,7 +201,7 @@ void Nautilus::castDredgeLine(float elapsedTimeSeconds) {
 
 		if (anchor.distance > 325) {
 			anchor.alive = false;
-			isRooted = false;
+			resetRoot();
 		}
 	}
 }
@@ -228,11 +244,30 @@ void Nautilus::followPath(float elapsedTimeSeconds) {
 	}
 }
 
+void Nautilus::autoAttack(float elapsedTimeSeconds) {
+	if (selectedRectangleIndex != nullptr && cooldowns.can_auto_attack) {
+		Vector2 difference = Vector2(selectedRectangleIndex->position->x + (*selectedRectangleIndex->width / 2), selectedRectangleIndex->position->y + (*selectedRectangleIndex->height / 2)) - center();
+		
+		if (abs(difference.x) + abs(difference.y) < 100) {
+			if (cooldowns.can_staggering_blow) {
+				cooldowns.can_staggering_blow = false;
+				cooldowns.staggering_blow = 0.0;
+				*selectedRectangleIndex->isRooted = durationsParent.staggering_blow[cooldowns.staggering_blow_level];
+			}
+
+			cooldowns.can_auto_attack = false;
+			cooldowns.auto_attack = 0.0;
+			isRooted = durationsParent.auto_attack;
+		}
+	}
+}
+
 void Nautilus::draw() {
 	//drawDebug();
 
 	drawing.drawCircleFill(clickPosition, 12, clickColor, clickAlpha);
-	drawing.drawRect(position, width, height);
+	if (!isRooted) { drawing.drawRect(position, width, height, color); }
+	else { drawing.drawRect(position, width, height, rootColor); }
 
 	if (anchor.hint) {
 		drawing.drawLine(center(), anchor.hintPosition, anchor.chainColor, 100);
