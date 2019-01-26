@@ -56,10 +56,10 @@ struct Anchor {
 
 	bool hooked = false;
 	bool bounce = false;
-	RectangleIndex rectangleIndex;
+	RectangleIndex* rectangleIndex;
 
-	int anchorColor[3] = { 99, 64, 61 };
-	int chainColor[3] = { 102, 94, 90 };
+	int colorAnchor[3] = { 99, 64, 61 };
+	int colorChain[3] = { 102, 94, 90 };
 };
 
 class Nautilus {
@@ -85,9 +85,9 @@ private:
 	double isRooted = 0;
 
 	int color[3] = { 119, 84, 81 };
-	int rootColor[3] = { 89, 54, 51 };
-	int pathColor[3] = { 92, 185, 196 };
-	int clickColor[3] = { 0, 0, 0 };
+	int colorRoot[3] = { 89, 54, 51 };
+	int colorPath[3] = { 92, 185, 196 };
+	int colorClick[3] = { 0, 0, 0 };
 
 	std::vector<Vector2> pathVertices;
 

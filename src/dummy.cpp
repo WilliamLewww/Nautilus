@@ -10,7 +10,7 @@ Dummy::Dummy(Vector2 position, int width, int height) {
 
 void Dummy::update(float elapsedTimeSeconds) {
 	if (isRooted == 0) { 
-		
+
 	}
 	else {
 		if (isRooted > 0) {
@@ -21,5 +21,6 @@ void Dummy::update(float elapsedTimeSeconds) {
 }
 
 void Dummy::draw() {
-	drawing.drawRect(position, width, height, color);
+	if (isRooted == 0) { drawing.drawRect(position, width, height, color); }
+	else { drawing.drawRect(position, width, height, colorRoot); }
 }

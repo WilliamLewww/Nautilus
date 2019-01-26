@@ -1,12 +1,9 @@
 #include "nautilus.h"
 
 void Nautilus::anchorSetHook(RectangleIndex* rectangleIndex) { 
-		anchor.rectangleIndex.position = rectangleIndex->position; 
-		anchor.rectangleIndex.width = rectangleIndex->width;
-		anchor.rectangleIndex.height = rectangleIndex->height;
-
-		anchor.hooked = true; 
-	};
+	anchor.rectangleIndex = rectangleIndex;
+	anchor.hooked = true; 
+};
 
 bool Nautilus::checkAnchorCollision(Vector2 position, int width, int height) {
 	if (anchor.position.x + anchor.width >= position.x &&
@@ -159,15 +156,16 @@ void Nautilus::initializeDredgeLine(int x, int y) {
 
 void Nautilus::castDredgeLine(float elapsedTimeSeconds) {
 	if (anchor.hooked) {
-		Vector2 difference = Vector2(anchor.rectangleIndex.position->x + (*anchor.rectangleIndex.width / 2), anchor.rectangleIndex.position->y + (*anchor.rectangleIndex.height / 2)) - center();
-		
+		Vector2 difference = Vector2(anchor.rectangleIndex->position->x + (*anchor.rectangleIndex->width / 2), anchor.rectangleIndex->position->y + (*anchor.rectangleIndex->height / 2)) - center();
+		if (*anchor.rectangleIndex->isRooted == 0) { *anchor.rectangleIndex->isRooted = -1; }
+
 		if (!anchor.bounce) {
 			position.x += (difference.x / (abs(difference.x) + abs(difference.y))) * 682.5 * elapsedTimeSeconds;
 			position.y += (difference.y / (abs(difference.x) + abs(difference.y))) * 682.5 * elapsedTimeSeconds;
-			anchor.rectangleIndex.position->x -= (difference.x / (abs(difference.x) + abs(difference.y))) * 682.5 * elapsedTimeSeconds;
-			anchor.rectangleIndex.position->y -= (difference.y / (abs(difference.x) + abs(difference.y))) * 682.5 * elapsedTimeSeconds;
-			anchor.position.x = anchor.rectangleIndex.position->x + (*anchor.rectangleIndex.width / 2) - (anchor.width / 2);
-			anchor.position.y = anchor.rectangleIndex.position->y + (*anchor.rectangleIndex.height / 2) - (anchor.height / 2);
+			anchor.rectangleIndex->position->x -= (difference.x / (abs(difference.x) + abs(difference.y))) * 682.5 * elapsedTimeSeconds;
+			anchor.rectangleIndex->position->y -= (difference.y / (abs(difference.x) + abs(difference.y))) * 682.5 * elapsedTimeSeconds;
+			anchor.position.x = anchor.rectangleIndex->position->x + (*anchor.rectangleIndex->width / 2) - (anchor.width / 2);
+			anchor.position.y = anchor.rectangleIndex->position->y + (*anchor.rectangleIndex->height / 2) - (anchor.height / 2);
 		
 			if (abs(difference.x) + abs(difference.y) < 50) {
 				anchor.bounce = true;
@@ -179,14 +177,15 @@ void Nautilus::castDredgeLine(float elapsedTimeSeconds) {
 				anchor.alive = false;
 				anchor.hooked = false;
 				resetRoot();
+				if (*anchor.rectangleIndex->isRooted == -1) { *anchor.rectangleIndex->isRooted = 0; }
 			}
 			else {
 				position.x -= (difference.x / (abs(difference.x) + abs(difference.y))) * 227.5 * elapsedTimeSeconds;
 				position.y -= (difference.y / (abs(difference.x) + abs(difference.y))) * 227.5 * elapsedTimeSeconds;
-				anchor.rectangleIndex.position->x += (difference.x / (abs(difference.x) + abs(difference.y))) * 227.5 * elapsedTimeSeconds;
-				anchor.rectangleIndex.position->y += (difference.y / (abs(difference.x) + abs(difference.y))) * 227.5 * elapsedTimeSeconds;
-				anchor.position.x = anchor.rectangleIndex.position->x + (*anchor.rectangleIndex.width / 2) - (anchor.width / 2);
-				anchor.position.y = anchor.rectangleIndex.position->y + (*anchor.rectangleIndex.height / 2) - (anchor.height / 2);
+				anchor.rectangleIndex->position->x += (difference.x / (abs(difference.x) + abs(difference.y))) * 227.5 * elapsedTimeSeconds;
+				anchor.rectangleIndex->position->y += (difference.y / (abs(difference.x) + abs(difference.y))) * 227.5 * elapsedTimeSeconds;
+				anchor.position.x = anchor.rectangleIndex->position->x + (*anchor.rectangleIndex->width / 2) - (anchor.width / 2);
+				anchor.position.y = anchor.rectangleIndex->position->y + (*anchor.rectangleIndex->height / 2) - (anchor.height / 2);
 			}
 		}
 	}
@@ -265,28 +264,28 @@ void Nautilus::autoAttack(float elapsedTimeSeconds) {
 void Nautilus::draw() {
 	//drawDebug();
 
-	drawing.drawCircleFill(clickPosition, 12, clickColor, clickAlpha);
-	if (!isRooted) { drawing.drawRect(position, width, height, color); }
-	else { drawing.drawRect(position, width, height, rootColor); }
+	drawing.drawCircleFill(clickPosition, 12, colorClick, clickAlpha);
+	if (isRooted == 0) { drawing.drawRect(position, width, height, color); }
+	else { drawing.drawRect(position, width, height, colorRoot); }
 
 	if (anchor.hint) {
-		drawing.drawLine(center(), anchor.hintPosition, anchor.chainColor, 100);
-		drawing.drawLine(center(), anchor.hintPosition - Vector2( anchor.width / 2,  anchor.height / 2), anchor.chainColor, 100);
-		drawing.drawLine(center(), anchor.hintPosition - Vector2(-anchor.width / 2,  anchor.height / 2), anchor.chainColor, 100);
-		drawing.drawLine(center(), anchor.hintPosition - Vector2( anchor.width / 2, -anchor.height / 2), anchor.chainColor, 100);
-		drawing.drawLine(center(), anchor.hintPosition - Vector2(-anchor.width / 2, -anchor.height / 2), anchor.chainColor, 100);
+		drawing.drawLine(center(), anchor.hintPosition, anchor.colorChain, 100);
+		drawing.drawLine(center(), anchor.hintPosition - Vector2( anchor.width / 2,  anchor.height / 2), anchor.colorChain, 100);
+		drawing.drawLine(center(), anchor.hintPosition - Vector2(-anchor.width / 2,  anchor.height / 2), anchor.colorChain, 100);
+		drawing.drawLine(center(), anchor.hintPosition - Vector2( anchor.width / 2, -anchor.height / 2), anchor.colorChain, 100);
+		drawing.drawLine(center(), anchor.hintPosition - Vector2(-anchor.width / 2, -anchor.height / 2), anchor.colorChain, 100);
 
-		drawing.drawRect(anchor.hintPosition - Vector2(anchor.width / 2, anchor.height / 2), anchor.width, anchor.height, anchor.anchorColor, 100);
+		drawing.drawRect(anchor.hintPosition - Vector2(anchor.width / 2, anchor.height / 2), anchor.width, anchor.height, anchor.colorAnchor, 100);
 	}
 
 	if (anchor.alive) {
-		drawing.drawLine(center(), anchor.position + Vector2(anchor.width / 2, anchor.height / 2), anchor.chainColor);
-		drawing.drawRect(anchor.position, anchor.width, anchor.height, anchor.anchorColor);
+		drawing.drawLine(center(), anchor.position + Vector2(anchor.width / 2, anchor.height / 2), anchor.colorChain);
+		drawing.drawRect(anchor.position, anchor.width, anchor.height, anchor.colorAnchor);
 	}
 }
 
 void Nautilus::drawDebug() {
 	if (pathVertices.size() == 2) {
-		drawing.drawLine(center(), pathVertices[1], pathColor);
+		drawing.drawLine(center(), pathVertices[1], colorPath);
 	}
 }
