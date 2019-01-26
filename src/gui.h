@@ -7,7 +7,7 @@
 
 class GUI {
 private:
-	int abilityWidth = 50, abilityHeight = 50;
+	int abilityWidth = 75, abilityHeight = 75;
 	int colorAbilityValid[3] = { 0, 255, 0 };
 	int colorAbilityInvalid[3] = { 255, 0, 0 };
 
