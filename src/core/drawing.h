@@ -8,15 +8,14 @@
 class Drawing {
 private:
 	SDL_Window* window;
-	TTF_Font* font;
+	TTF_Font* font[5];
 
 	double convertColorFloatToRGB(int rgbValue);
 	double convertColorFloatToRGB(double rgbValue);
 public:
 	const double PI = 3.14159265359;
 
-	void drawText(const char* message, Vector2 position, int size);
-	void drawText(const char* message, Vector2 position, int size, SDL_Color color);
+	void drawText(const char* message, Vector2 position, int index);
 	
 	void drawPoint(Vector2 position);
 	void drawPoint(Vector2 position, int alpha);

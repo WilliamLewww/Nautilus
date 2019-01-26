@@ -28,6 +28,6 @@ void GUI::draw() {
 		else {
 			drawing.drawRect(abilityPosition[x], abilityWidth, abilityHeight, colorAbilityInvalid);
 		}
-		drawing.drawText(cooldown.c_str(), abilityPosition[x] + Vector2(abilityWidth / 2, abilityHeight / 2), 64);
+		drawing.drawText(cooldown.c_str(), abilityPosition[x] + Vector2(abilityWidth / 2, abilityHeight / 2), 4);
 	}
 }

@@ -10,7 +10,7 @@ double Drawing::convertColorFloatToRGB(double rgbValue) {
 	return (double)rgbValue / 255;
 }
 
-void Drawing::drawText(const char* message, Vector2 position, int size) {
+void Drawing::drawText(const char* message, Vector2 position, int index) {
 	Vector2 vectors[4]{
 		Vector2(0, 0),
 		Vector2(1, 0),
@@ -27,18 +27,22 @@ void Drawing::drawText(const char* message, Vector2 position, int size) {
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
-	if (font == nullptr) {
-		 font = TTF_OpenFont("res/Aller_Rg.ttf", size);
+	if (font[index] == nullptr) {
+		 font[0] = TTF_OpenFont("res/Aller_Rg.ttf", 8);
+		 font[1] = TTF_OpenFont("res/Aller_Rg.ttf", 16);
+		 font[2] = TTF_OpenFont("res/Aller_Rg.ttf", 24);
+		 font[3] = TTF_OpenFont("res/Aller_Rg.ttf", 32);
+		 font[4] = TTF_OpenFont("res/Aller_Rg.ttf", 64);
 	}
 
-	SDL_Surface *sFont = TTF_RenderText_Blended(font, message, color);
+	SDL_Surface *sFont = TTF_RenderText_Blended(font[index], message, color);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, sFont->w, sFont->h, 0, GL_BGRA, GL_UNSIGNED_BYTE, sFont->pixels);
 
 	int width, height;
-	TTF_SizeText(font, message, &width, &height);
+	TTF_SizeText(font[index], message, &width, &height);
 
 	glBegin(GL_QUADS);
 	for (int x = 0; x < 4; x++) {
@@ -49,48 +53,6 @@ void Drawing::drawText(const char* message, Vector2 position, int size) {
 		vectors[x] += Vector2(position.x, position.y);
 		vectors[x].x -= width / 2;
 		vectors[x].y -= height / 2;
-		vectors[x] -= Vector2(configuration.getScreenWidth() / 2, configuration.getScreenHeight() / 2);
-
-		glVertex2d(vectors[x].x, vectors[x].y);
-	}
-	glEnd();
-	glDisable(GL_TEXTURE_2D);
-}
-
-void Drawing::drawText(const char* message, Vector2 position, int size, SDL_Color color) {
-	Vector2 vectors[4]{
-		Vector2(0, 0),
-		Vector2(1, 0),
-		Vector2(1, 1),
-		Vector2(0, 1)
-	};
-
-	glEnable(GL_TEXTURE_2D);
-	
-	GLuint texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-
-	if (font == nullptr) {
-		 font = TTF_OpenFont("res/Aller_Rg.ttf", size);
-	}
-
-	SDL_Surface *sFont = TTF_RenderText_Blended(font, message, color);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, sFont->w, sFont->h, 0, GL_BGRA, GL_UNSIGNED_BYTE, sFont->pixels);
-
-	int width, height;
-	TTF_SizeText(font, message, &width, &height);
-
-	glBegin(GL_QUADS);
-	for (int x = 0; x < 4; x++) {
-		glTexCoord2d(vectors[x].x, vectors[x].y);
-
-		vectors[x].x *= width;
-		vectors[x].y *= height;
-		vectors[x] += Vector2(position.x, position.y);
 		vectors[x] -= Vector2(configuration.getScreenWidth() / 2, configuration.getScreenHeight() / 2);
 
 		glVertex2d(vectors[x].x, vectors[x].y);
