@@ -6,6 +6,7 @@
 #include "core\timer.h"
 #include "camera.h"
 #include "world.h"
+#include "gui.h"
 
 class Joiner {
 private:

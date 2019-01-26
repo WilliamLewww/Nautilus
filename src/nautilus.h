@@ -6,6 +6,7 @@
 #include "core/input.h"
 #include "rectangle_index.h"
 #include "stats.h"
+#include "gui.h"
 
 struct NautilusDurationsParent {
 	double auto_attack = 0.21;

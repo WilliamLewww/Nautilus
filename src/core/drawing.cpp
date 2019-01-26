@@ -47,6 +47,8 @@ void Drawing::drawText(const char* message, Vector2 position, int size) {
 		vectors[x].x *= width;
 		vectors[x].y *= height;
 		vectors[x] += Vector2(position.x, position.y);
+		vectors[x].x -= width / 2;
+		vectors[x].y -= height / 2;
 		vectors[x] -= Vector2(configuration.getScreenWidth() / 2, configuration.getScreenHeight() / 2);
 
 		glVertex2d(vectors[x].x, vectors[x].y);

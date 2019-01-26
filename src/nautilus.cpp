@@ -24,6 +24,7 @@ void Nautilus::initialize() {
 	setupCooldowns();
 	health = stats.health;
 	mana = stats.mana;
+	gui.linkAbilities(&cooldowns.dredge_line, &cooldowns.titans_wrath, &cooldowns.riptide, &cooldowns.depth_charge);
 }
 
 void Nautilus::setupStats() {
@@ -48,33 +49,33 @@ void Nautilus::setupStats() {
 }
 
 void Nautilus::setupCooldowns() {
-	cooldowns.auto_attack = (1.0 / stats.attack_speed);
-	cooldowns.staggering_blow = cooldownsParent.staggering_blow[0];
+	cooldowns.auto_attack = 0;
+	cooldowns.staggering_blow = 0;
 
-	cooldowns.dredge_line = cooldownsParent.dredge_line[0];
-	cooldowns.titans_wrath = cooldownsParent.titans_wrath[0];
-	cooldowns.riptide = cooldownsParent.riptide[0];
-	cooldowns.depth_charge = cooldownsParent.depth_charge[0];
+	cooldowns.dredge_line = 0;
+	cooldowns.titans_wrath = 0;
+	cooldowns.riptide = 0;
+	cooldowns.depth_charge = 0;
 }
 
 void Nautilus::checkCooldowns(float elapsedTimeSeconds) {
-	if (cooldowns.auto_attack >= (1.0 / stats.attack_speed)) { cooldowns.can_auto_attack = true; }
-	else { cooldowns.auto_attack += elapsedTimeSeconds; }
+	if (cooldowns.auto_attack <= 0) { cooldowns.can_auto_attack = true; }
+	else { cooldowns.auto_attack -= elapsedTimeSeconds; }
 
-	if (cooldowns.staggering_blow >= cooldownsParent.staggering_blow[cooldowns.staggering_blow_level]) { cooldowns.can_staggering_blow = true; }
-	else { cooldowns.staggering_blow += elapsedTimeSeconds; }
+	if (cooldowns.staggering_blow <= 0) { cooldowns.can_staggering_blow = true; }
+	else { cooldowns.staggering_blow -= elapsedTimeSeconds; }
 	
-	if (cooldowns.dredge_line >= cooldownsParent.dredge_line[cooldowns.dredge_line_level]) { cooldowns.can_dredge_line = true; }
-	else { cooldowns.dredge_line += elapsedTimeSeconds; }
+	if (cooldowns.dredge_line <= 0) { cooldowns.can_dredge_line = true; }
+	else { cooldowns.dredge_line -= elapsedTimeSeconds; }
 	
-	if (cooldowns.titans_wrath >= cooldownsParent.titans_wrath[cooldowns.titans_wrath_level]) { cooldowns.can_titans_wrath = true; }
-	else { cooldowns.titans_wrath += elapsedTimeSeconds; }
+	if (cooldowns.titans_wrath <= 0) { cooldowns.can_titans_wrath = true; }
+	else { cooldowns.titans_wrath -= elapsedTimeSeconds; }
 	
-	if (cooldowns.riptide >= cooldownsParent.riptide[cooldowns.riptide_level]) { cooldowns.can_riptide = true; }
-	else { cooldowns.riptide += elapsedTimeSeconds; }
+	if (cooldowns.riptide <= 0) { cooldowns.can_riptide = true; }
+	else { cooldowns.riptide -= elapsedTimeSeconds; }
 	
-	if (cooldowns.depth_charge >= cooldownsParent.depth_charge[cooldowns.depth_charge_level]) { cooldowns.can_depth_charge = true; }
-	else { cooldowns.depth_charge += elapsedTimeSeconds; }
+	if (cooldowns.depth_charge <= 0) { cooldowns.can_depth_charge = true; }
+	else { cooldowns.depth_charge -= elapsedTimeSeconds; }
 }
 
 void Nautilus::update(float elapsedTimeSeconds) {
@@ -147,7 +148,7 @@ void Nautilus::initializeDredgeLine(int x, int y) {
 	isRooted = -1;
 	resetPath();
 	cooldowns.can_dredge_line = false;
-	cooldowns.dredge_line = 0.0;
+	cooldowns.dredge_line = cooldownsParent.staggering_blow[cooldowns.dredge_line_level];
 
 	anchor.position = Vector2(center().x - (anchor.width / 2), center().y - (anchor.height / 2));
 	anchor.direction = Vector2(x, y) - center();
@@ -250,12 +251,12 @@ void Nautilus::autoAttack(float elapsedTimeSeconds) {
 		if (abs(difference.x) + abs(difference.y) < 100) {
 			if (cooldowns.can_staggering_blow) {
 				cooldowns.can_staggering_blow = false;
-				cooldowns.staggering_blow = 0.0;
+				cooldowns.staggering_blow = cooldownsParent.staggering_blow[cooldowns.staggering_blow_level];
 				*selectedRectangleIndex->isRooted = durationsParent.staggering_blow[cooldowns.staggering_blow_level];
 			}
 
 			cooldowns.can_auto_attack = false;
-			cooldowns.auto_attack = 0.0;
+			cooldowns.auto_attack = (1.0 / stats.attack_speed);
 			isRooted = durationsParent.auto_attack;
 		}
 	}
