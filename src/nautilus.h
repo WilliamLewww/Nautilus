@@ -1,6 +1,7 @@
 #pragma once
-#include <vector>
+#include <map>
 #include <cmath>
+#include <vector>
 #include "core/drawing.h"
 #include "core/vector2.h"
 #include "core/input.h"
@@ -65,6 +66,7 @@ struct Anchor {
 
 class Nautilus {
 private:
+	int level = 1;
 	double health, mana;
 
 	NautilusDurationsParent durationsParent;
@@ -100,6 +102,8 @@ private:
 	bool queueDredgeLine = false, cancelDredgeLine = false;
 	Anchor anchor;
 
+	std::map<Vector2, Vector2> damageDisplayMap;
+
 	inline Vector2 center() { return Vector2(position.x + (width / 2), position.y + (height / 2)); };
 	inline void resetPath() { pathVertices.clear(); };
 	inline void resetRoot() { isRooted = 0; };
@@ -111,6 +115,11 @@ private:
 	void createPath(int x, int y);
 	void followPath(float elapsedTimeSeconds);
 	void autoAttack(float elapsedTimeSeconds);
+
+	void damageAuto(RectangleIndex* rectangleIndex, bool empowered);
+
+	void displayDamage(Vector2 position, double damage);
+	void updateDamageDisplay(float elapsedTimeSeconds);
 
 	void initializeDredgeLine(int x, int y);
 	void castDredgeLine(float elapsedTimeSeconds);

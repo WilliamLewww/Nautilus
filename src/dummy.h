@@ -10,7 +10,7 @@ private:
 	int width, height;
 
 	double isRooted;
-	double health, mana;
+	double health = 99999, mana = 99999;
 
 	int color[3] = { 140, 87, 37 };
 	int colorRoot[3] = { 110, 57, 7 };

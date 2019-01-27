@@ -124,6 +124,7 @@ void Nautilus::update(float elapsedTimeSeconds) {
 		}
 	}
 	updateTimer(elapsedTimeSeconds);
+	updateDamageDisplay(elapsedTimeSeconds);
 }
 
 void Nautilus::updateTimer(float elapsedTimeSeconds) {
@@ -253,12 +254,35 @@ void Nautilus::autoAttack(float elapsedTimeSeconds) {
 				cooldowns.can_staggering_blow = false;
 				cooldowns.staggering_blow = cooldownsParent.staggering_blow[cooldowns.staggering_blow_level];
 				*selectedRectangleIndex->isRooted = durationsParent.staggering_blow[cooldowns.staggering_blow_level];
+				damageAuto(selectedRectangleIndex, true);
 			}
+			else { damageAuto(selectedRectangleIndex, false); }
 
 			cooldowns.can_auto_attack = false;
 			cooldowns.auto_attack = (1.0 / stats.attack_speed);
 			isRooted = durationsParent.auto_attack;
 		}
+	}
+}
+
+void Nautilus::damageAuto(RectangleIndex* rectangleIndex, bool empowered) {
+	*rectangleIndex->health -= stats.attack_damage;
+	if (!empowered) {
+		displayDamage(*rectangleIndex->position, stats.attack_damage);
+	}
+	else {
+		*rectangleIndex->health -= (2.0 + (6 * level));
+		displayDamage(*rectangleIndex->position, stats.attack_damage + (2.0 + (6 * level)));
+	}
+}
+
+void Nautilus::displayDamage(Vector2 position, double damage) {
+	damageDisplayMap[position] = Vector2(damage, 0.0);
+}
+
+void Nautilus::updateDamageDisplay(float elapsedTimeSeconds) {
+	for (auto& pair : damageDisplayMap) {
+		pair.second.y += elapsedTimeSeconds;
 	}
 }
 
@@ -282,6 +306,11 @@ void Nautilus::draw() {
 	if (anchor.alive) {
 		drawing.drawLine(center(), anchor.position + Vector2(anchor.width / 2, anchor.height / 2), anchor.colorChain);
 		drawing.drawRect(anchor.position, anchor.width, anchor.height, anchor.colorAnchor);
+	}
+
+	for (auto& pair : damageDisplayMap) {
+		std::string damage = std::to_string((int)ceil(pair.second.x));
+		drawing.drawText(damage.c_str(), *pair.first + Vector2(15, -15 - (pair.second.y * 8)), 2);
 	}
 }
 
