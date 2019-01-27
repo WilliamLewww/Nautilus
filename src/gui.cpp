@@ -11,7 +11,7 @@ void GUI::linkAbilities(double* abilityA, double* abilityB, double* abilityC, do
 
 void GUI::initialize() {
 	for (int x = 0; x < 4; x++) {
-		abilityPosition[x] = Vector2((x * abilityWidth * 2.0) + (configuration.getScreenWidth() / 2.0) - (525.0 / 2.0), configuration.getScreenHeight() * 0.87);
+		abilityPosition[x] = Vector2((x * abilityWidth * 1.3) + (configuration.getScreenWidth() / 2.0) - (245.0 / 2.0), configuration.getScreenHeight() * 0.87);
 	}
 }
 
@@ -28,6 +28,6 @@ void GUI::draw() {
 		else {
 			drawing.drawRect(abilityPosition[x], abilityWidth, abilityHeight, colorAbilityInvalid);
 		}
-		drawing.drawText(cooldown.c_str(), abilityPosition[x] + Vector2(abilityWidth / 2, abilityHeight / 2), 4);
+		drawing.drawText(cooldown.c_str(), abilityPosition[x] + Vector2(abilityWidth / 2, abilityHeight / 2), 3);
 	}
 }
