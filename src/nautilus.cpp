@@ -310,7 +310,7 @@ void Nautilus::draw() {
 
 	for (auto& pair : damageDisplayMap) {
 		std::string damage = std::to_string((int)ceil(pair.second.x));
-		drawing.drawText(damage.c_str(), *pair.first + Vector2(15, -15 - (pair.second.y * 8)), 2);
+		drawing.drawText(damage.c_str(), Vector2(pair.first) + Vector2(25, -15 - (pair.second.y * 8)), 2);
 	}
 }
 

@@ -5,6 +5,11 @@ Vector2::Vector2() {
 	y = 0;
 }
 
+Vector2::Vector2(const Vector2& vector) {
+	x = vector.x;
+	y = vector.y;
+}
+
 Vector2::Vector2(double xArgs, double yArgs) {
 	x = xArgs;
 	y = yArgs;
@@ -138,4 +143,8 @@ bool Vector2::operator!=(Vector2 vector) {
 
 std::ostream &operator<<(std::ostream &os, Vector2 const &m) {
 	return os << m.x << "," << m.y;
+}
+
+bool Vector2::operator<(const Vector2& vector) const {
+	return true;
 }
