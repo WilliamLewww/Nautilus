@@ -10,7 +10,7 @@
 #include "gui.h"
 
 struct NautilusDurationsParent {
-	double auto_attack = 0.21;
+	double auto_attack_current_frame = 0.0;
 	double staggering_blow[5] = { 0.5, 0.75, 1, 1.25, 1.5 };
 	double depth_charge[3] = { 1, 1.5, 2 };
 };

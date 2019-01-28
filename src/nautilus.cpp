@@ -241,6 +241,8 @@ void Nautilus::followPath(float elapsedTimeSeconds) {
 		Vector2 difference = Vector2(selectedRectangleIndex->position->x + (*selectedRectangleIndex->width / 2), selectedRectangleIndex->position->y + (*selectedRectangleIndex->height / 2)) - center();
 		
 		if (abs(difference.x) + abs(difference.y) >= 100) {
+			durationsParent.auto_attack_current_frame = 0.0;
+
 			position.x += (difference.x / (abs(difference.x) + abs(difference.y))) * getActualSpeed(stats) * elapsedTimeSeconds;
 			position.y += (difference.y / (abs(difference.x) + abs(difference.y))) * getActualSpeed(stats) * elapsedTimeSeconds;
 		}
@@ -251,18 +253,24 @@ void Nautilus::autoAttack(float elapsedTimeSeconds) {
 	if (selectedRectangleIndex != nullptr && cooldowns.can_auto_attack) {
 		Vector2 difference = Vector2(selectedRectangleIndex->position->x + (*selectedRectangleIndex->width / 2), selectedRectangleIndex->position->y + (*selectedRectangleIndex->height / 2)) - center();
 		
-		if (abs(difference.x) + abs(difference.y) < 100) {
-			if (cooldowns.can_staggering_blow) {
-				cooldowns.can_staggering_blow = false;
-				cooldowns.staggering_blow = cooldownsParent.staggering_blow[cooldowns.staggering_blow_level];
-				*selectedRectangleIndex->isRooted = durationsParent.staggering_blow[cooldowns.staggering_blow_level];
-				damageAuto(selectedRectangleIndex, true);
-			}
-			else { damageAuto(selectedRectangleIndex, false); }
+		if (durationsParent.auto_attack_current_frame < stats.attack_speed * 0.75) {
+			durationsParent.auto_attack_current_frame += elapsedTimeSeconds;
+		}
+		else {
+			durationsParent.auto_attack_current_frame = 0.0;
 
-			cooldowns.can_auto_attack = false;
-			cooldowns.auto_attack = (1.0 / stats.attack_speed);
-			isRooted = durationsParent.auto_attack;
+			if (abs(difference.x) + abs(difference.y) < 100) {
+				if (cooldowns.can_staggering_blow) {
+					cooldowns.can_staggering_blow = false;
+					cooldowns.staggering_blow = cooldownsParent.staggering_blow[cooldowns.staggering_blow_level];
+					*selectedRectangleIndex->isRooted = durationsParent.staggering_blow[cooldowns.staggering_blow_level];
+					damageAuto(selectedRectangleIndex, true);
+				}
+				else { damageAuto(selectedRectangleIndex, false); }
+
+				cooldowns.can_auto_attack = false;
+				cooldowns.auto_attack = (1.0 / stats.attack_speed);
+			}
 		}
 	}
 }
