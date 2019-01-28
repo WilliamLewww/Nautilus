@@ -4,6 +4,7 @@
 #include <vector>
 #include "core/drawing.h"
 #include "core/vector2.h"
+#include "core/vector3.h"
 #include "core/input.h"
 #include "rectangle_index.h"
 #include "stats.h"
@@ -102,6 +103,9 @@ private:
 	int colorPath[3] = { 92, 185, 196 };
 	int colorClick[3] = { 0, 0, 0 };
 
+	int colorDamagePhysical[3] = { 255, 135, 139 };
+	int colorDamageMagic[3] = { 183, 135, 255 };
+
 	std::vector<Vector2> pathVertices;
 
 	double timer = 0;
@@ -112,7 +116,7 @@ private:
 	bool queueDredgeLine = false, cancelDredgeLine = false;
 	Anchor anchor;
 
-	std::multimap<Vector2,Vector2> damageDisplayMap;
+	std::multimap<Vector2,Vector3> damageDisplayMap;
 
 	inline Vector2 center() { return Vector2(position.x + (width / 2), position.y + (height / 2)); };
 	inline void resetPath() { pathVertices.clear(); };
@@ -129,7 +133,7 @@ private:
 	void damageAuto(RectangleIndex* rectangleIndex, bool empowered);
 	void damageDredgeLine(RectangleIndex* rectangleIndex);
 
-	void displayDamage(Vector2 position, double damage);
+	void generateDamageDisplay(Vector2 position, double damage, int type);
 	void updateDamageDisplay(float elapsedTimeSeconds);
 
 	void initializeDredgeLine(int x, int y);

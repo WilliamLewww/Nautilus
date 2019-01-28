@@ -16,6 +16,7 @@ public:
 	const double PI = 3.14159265359;
 
 	void drawText(const char* message, Vector2 position, int index);
+	void drawText(const char* message, Vector2 position, int index, int color[3]);
 	
 	void drawPoint(Vector2 position);
 	void drawPoint(Vector2 position, int alpha);

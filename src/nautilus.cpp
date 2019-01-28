@@ -278,34 +278,34 @@ void Nautilus::autoAttack(float elapsedTimeSeconds) {
 void Nautilus::damageAuto(RectangleIndex* rectangleIndex, bool empowered) {
 	*rectangleIndex->health -= stats.attack_damage;
 	if (!empowered) {
-		displayDamage(*rectangleIndex->position, stats.attack_damage);
+		generateDamageDisplay(*rectangleIndex->position, stats.attack_damage, 0);
 	}
 	else {
 		*rectangleIndex->health -= (2.0 + (6 * level));
-		displayDamage(*rectangleIndex->position, stats.attack_damage + (2.0 + (6 * level)));
+		generateDamageDisplay(*rectangleIndex->position, stats.attack_damage + (2.0 + (6 * level)), 0);
 	}
 }
 
 void Nautilus::damageDredgeLine(RectangleIndex* rectangleIndex) {
 	*rectangleIndex->health -= damageAbilities.dredge_line[cooldowns.dredge_line_level] + (0.75 * stats.ability_power);
-	displayDamage(*rectangleIndex->position, damageAbilities.dredge_line[cooldowns.dredge_line_level] + (0.75 * stats.ability_power));
+	generateDamageDisplay(*rectangleIndex->position, damageAbilities.dredge_line[cooldowns.dredge_line_level] + (0.75 * stats.ability_power), 1);
 }
 
-void Nautilus::displayDamage(Vector2 position, double damage) {
-	damageDisplayMap.emplace(position, Vector2(damage, 0.0));
+void Nautilus::generateDamageDisplay(Vector2 position, double damage, int type) {
+	damageDisplayMap.emplace(position, Vector3(damage, 0.0, type));
 }
 
 void Nautilus::updateDamageDisplay(float elapsedTimeSeconds) {
 	std::vector<Vector2> tempList;
 	for (auto& pair : damageDisplayMap) {
 		pair.second.y += elapsedTimeSeconds;
-		if (pair.second.y > 0.83) {
+		if (pair.second.y > 0.64) {
 			tempList.push_back(pair.first);
 		}
 	}
 
 	for (Vector2 position : tempList) {
-		std::multimap<Vector2,Vector2>::iterator it = damageDisplayMap.find(position);
+		std::multimap<Vector2,Vector3>::iterator it = damageDisplayMap.find(position);
 		damageDisplayMap.erase(it);
 	}
 	tempList.clear();
@@ -335,7 +335,12 @@ void Nautilus::draw() {
 
 	for (auto& pair : damageDisplayMap) {
 		std::string damage = std::to_string((int)ceil(pair.second.x));
-		drawing.drawText(damage.c_str(), Vector2(pair.first) + Vector2(25, - 15.0 - (pair.second.y * 25.0)), 2);
+		if (pair.second.z == 0) {
+			drawing.drawText(damage.c_str(), Vector2(pair.first) + Vector2(25, - 15.0 - (pair.second.y * 25.0)), 2, colorDamagePhysical);
+		}
+		if (pair.second.z == 1) {
+			drawing.drawText(damage.c_str(), Vector2(pair.first) + Vector2(25, - 15.0 - (pair.second.y * 25.0)), 2, colorDamageMagic);
+		}
 	}
 }
 

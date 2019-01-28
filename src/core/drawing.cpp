@@ -20,8 +20,7 @@ void Drawing::drawText(const char* message, Vector2 position, int index) {
 
 	glEnable(GL_TEXTURE_2D);
 
-	SDL_Color color;
-	color.r = 0; color.g = 0; color.b = 0; color.a = 255;
+	SDL_Color color = { 0, 0, 0, 255 };
 	
 	GLuint texture;
 	glGenTextures(1, &texture);
@@ -36,6 +35,56 @@ void Drawing::drawText(const char* message, Vector2 position, int index) {
 	}
 
 	SDL_Surface *sFont = TTF_RenderText_Blended(font[index], message, color);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, sFont->w, sFont->h, 0, GL_BGRA, GL_UNSIGNED_BYTE, sFont->pixels);
+
+	int width, height;
+	TTF_SizeText(font[index], message, &width, &height);
+
+	glBegin(GL_QUADS);
+	for (int x = 0; x < 4; x++) {
+		glTexCoord2d(vectors[x].x, vectors[x].y);
+
+		vectors[x].x *= width;
+		vectors[x].y *= height;
+		vectors[x] += Vector2(position.x, position.y);
+		vectors[x].x -= width / 2;
+		vectors[x].y -= height / 2;
+		vectors[x] -= Vector2(configuration.getScreenWidth() / 2, configuration.getScreenHeight() / 2);
+
+		glVertex2d(vectors[x].x, vectors[x].y);
+	}
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+}
+
+void Drawing::drawText(const char* message, Vector2 position, int index, int color[3]) {
+	Vector2 vectors[4]{
+		Vector2(0, 0),
+		Vector2(1, 0),
+		Vector2(1, 1),
+		Vector2(0, 1)
+	};
+
+	glEnable(GL_TEXTURE_2D);
+
+	SDL_Color sdlColor = { (unsigned char)color[0], (unsigned char)color[1], (unsigned char)color[2], 255 };
+	
+	GLuint texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	if (font[index] == nullptr) {
+		 font[0] = TTF_OpenFont("res/Aller_Rg.ttf", 8);
+		 font[1] = TTF_OpenFont("res/Aller_Rg.ttf", 16);
+		 font[2] = TTF_OpenFont("res/Aller_Rg.ttf", 24);
+		 font[3] = TTF_OpenFont("res/Aller_Rg.ttf", 32);
+		 font[4] = TTF_OpenFont("res/Aller_Rg.ttf", 64);
+	}
+
+	SDL_Surface *sFont = TTF_RenderText_Blended(font[index], message, sdlColor);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
