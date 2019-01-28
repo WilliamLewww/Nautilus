@@ -13,6 +13,8 @@
 struct NautilusDurationsParent {
 	double auto_attack_current_frame = 0.0;
 	double staggering_blow[5] = { 0.5, 0.75, 1, 1.25, 1.5 };
+	double titans_wrath = 6.0;
+	double titans_wrath_effect = 2.0;
 	double depth_charge[3] = { 1, 1.5, 2 };
 };
 
@@ -27,6 +29,8 @@ struct NautilusCooldownsParent {
 struct NautilusDamageAbilities {
 	double dredge_line[5] = { 80, 120, 160, 200, 240 };
 	double titans_wrath[5] = { 30, 40, 50, 60, 70 };
+	double titans_wrath_shield[5] = { 60, 70, 80, 90, 100 };
+	double titans_wrath_shield_scale[5] = { 9, 10, 11, 12, 13 };
 	double riptide[5] = { 55, 85, 115, 145, 175 };
 	double depth_charge_trail[3] = { 125, 175, 225 };
 	double depth_charge[3] = { 200, 325, 450 };
@@ -73,10 +77,19 @@ struct Anchor {
 	int colorChain[3] = { 102, 94, 90 };
 };
 
+struct Helmet {
+	bool alive = false;
+	double timeLeft = 0.0;
+
+	std::vector<RectangleIndex*> hitRectangleList;
+	std::vector<Vector2> tickList;
+};
+
 class Nautilus {
 private:
 	int level = 1;
 	double health, mana;
+	double shield;
 
 	NautilusDurationsParent durationsParent;
 
@@ -100,11 +113,12 @@ private:
 
 	int color[3] = { 119, 84, 81 };
 	int colorRoot[3] = { 89, 54, 51 };
+	int colorHelmet[3] = { 0, 0, 255 };
 	int colorPath[3] = { 92, 185, 196 };
 	int colorClick[3] = { 0, 0, 0 };
 
-	int colorDamagePhysical[3] = { 255, 135, 139 };
-	int colorDamageMagic[3] = { 183, 135, 255 };
+	int colorDamagePhysical[3] = { 255, 48, 55 };
+	int colorDamageMagic[3] = { 198, 160, 255 };
 
 	std::vector<Vector2> pathVertices;
 
@@ -115,6 +129,8 @@ private:
 
 	bool queueDredgeLine = false, cancelDredgeLine = false;
 	Anchor anchor;
+
+	Helmet helmet;
 
 	std::multimap<Vector2,Vector3> damageDisplayMap;
 
@@ -140,7 +156,8 @@ private:
 	void castDredgeLine(float elapsedTimeSeconds);
 
 	void initializeTitansWrath();
-	void castTitansWrath();
+	void castTitansWrath(float elapsedTimeSeconds);
+	void addTitansWrathEffect(RectangleIndex* rectangleIndex);
 
 	void initializeRiptide();
 	void castRiptide();

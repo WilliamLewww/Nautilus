@@ -115,6 +115,9 @@ void Nautilus::update(float elapsedTimeSeconds) {
 	if (!anchor.alive && queueDredgeLine && !input.checkKeyDown(SDLK_q)) { anchor.alive = true; queueDredgeLine = false; initializeDredgeLine(input.getMouseXCamera(), input.getMouseYCamera()); }
 	if (anchor.alive) {	anchor.hint = false; castDredgeLine(elapsedTimeSeconds); }
 
+	if (input.checkKeyDown(SDLK_w) && cooldowns.can_titans_wrath) { initializeTitansWrath(); }
+	castTitansWrath(elapsedTimeSeconds);
+
 	if (isRooted == 0) { 
 		followPath(elapsedTimeSeconds);
 		autoAttack(elapsedTimeSeconds);
@@ -209,6 +212,61 @@ void Nautilus::castDredgeLine(float elapsedTimeSeconds) {
 	}
 }
 
+void Nautilus::initializeTitansWrath() {
+	helmet.alive = true;
+	helmet.timeLeft = durationsParent.titans_wrath;
+	shield += damageAbilities.titans_wrath_shield[cooldowns.titans_wrath_level] + (damageAbilities.titans_wrath_shield_scale[cooldowns.titans_wrath_level] * stats.health);
+
+	cooldowns.can_titans_wrath = false;
+	cooldowns.titans_wrath = cooldownsParent.titans_wrath[cooldowns.titans_wrath_level];
+}
+
+void Nautilus::addTitansWrathEffect(RectangleIndex* rectangleIndex) {
+	*rectangleIndex->health -= damageAbilities.titans_wrath[cooldowns.titans_wrath_level] + (0.4 * stats.ability_power);
+	generateDamageDisplay(*rectangleIndex->position, damageAbilities.titans_wrath[cooldowns.titans_wrath_level] + (0.4 * stats.ability_power), 1);
+
+	helmet.hitRectangleList.push_back(rectangleIndex);
+	helmet.tickList.push_back(Vector2(0.0, 0.0));
+}
+
+void Nautilus::castTitansWrath(float elapsedTimeSeconds) {
+	if (helmet.alive == true) { 
+		if (helmet.timeLeft > 0) {
+			helmet.timeLeft -= elapsedTimeSeconds;
+		}
+		else {
+			helmet.alive = false;
+			if (shield > 0) {
+				if (shield - damageAbilities.titans_wrath_shield[cooldowns.titans_wrath_level] + (damageAbilities.titans_wrath_shield_scale[cooldowns.titans_wrath_level] * stats.health) < 0) {
+					shield = 0;
+				}
+				else {
+					shield -= damageAbilities.titans_wrath_shield[cooldowns.titans_wrath_level] + (damageAbilities.titans_wrath_shield_scale[cooldowns.titans_wrath_level] * stats.health);
+				}
+			}
+		}
+	}
+
+	for (int x = 0; x < helmet.hitRectangleList.size(); x++) {
+		if (helmet.tickList[x].x < durationsParent.titans_wrath_effect) {
+			if (helmet.tickList[x].y < 1.0) {
+				helmet.tickList[x].y += elapsedTimeSeconds;
+			}
+			else {
+				*helmet.hitRectangleList[x]->health -= damageAbilities.titans_wrath[cooldowns.titans_wrath_level] + (0.4 * stats.ability_power);
+				generateDamageDisplay(*helmet.hitRectangleList[x]->position, damageAbilities.titans_wrath[cooldowns.titans_wrath_level] + (0.4 * stats.ability_power), 1);
+				helmet.tickList[x].x += 1;
+				helmet.tickList[x].y = 0.0;
+			}
+		}
+		else {
+			helmet.hitRectangleList.erase(helmet.hitRectangleList.begin() + x);
+			helmet.tickList.erase(helmet.tickList.begin() + x);
+			x -= 1;
+		}
+	}
+}
+
 void Nautilus::createPath(int x, int y) {
 	pathVertices.clear();
 
@@ -277,6 +335,8 @@ void Nautilus::autoAttack(float elapsedTimeSeconds) {
 
 void Nautilus::damageAuto(RectangleIndex* rectangleIndex, bool empowered) {
 	*rectangleIndex->health -= stats.attack_damage;
+	if (helmet.alive) { addTitansWrathEffect(rectangleIndex); }
+
 	if (!empowered) {
 		generateDamageDisplay(*rectangleIndex->position, stats.attack_damage, 0);
 	}
@@ -318,6 +378,8 @@ void Nautilus::draw() {
 	if (isRooted == 0) { drawing.drawRect(position, width, height, color); }
 	else { drawing.drawRect(position, width, height, colorRoot); }
 
+	if (helmet.alive) { drawing.drawRect(position, width, height / 3, colorHelmet); }
+
 	if (anchor.hint) {
 		drawing.drawLine(center(), anchor.hintPosition, anchor.colorChain, 100);
 		drawing.drawLine(center(), anchor.hintPosition - Vector2( anchor.width / 2,  anchor.height / 2), anchor.colorChain, 100);
@@ -336,7 +398,7 @@ void Nautilus::draw() {
 	for (auto& pair : damageDisplayMap) {
 		std::string damage = std::to_string((int)ceil(pair.second.x));
 		if (pair.second.z == 0) {
-			drawing.drawText(damage.c_str(), Vector2(pair.first) + Vector2(25, - 15.0 - (pair.second.y * 25.0)), 2, colorDamagePhysical);
+			drawing.drawText(damage.c_str(), Vector2(pair.first) + Vector2(25, - 40.0 - (pair.second.y * 25.0)), 2, colorDamagePhysical);
 		}
 		if (pair.second.z == 1) {
 			drawing.drawText(damage.c_str(), Vector2(pair.first) + Vector2(25, - 15.0 - (pair.second.y * 25.0)), 2, colorDamageMagic);

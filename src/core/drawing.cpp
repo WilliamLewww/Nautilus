@@ -69,6 +69,7 @@ void Drawing::drawText(const char* message, Vector2 position, int index, int col
 	};
 
 	glEnable(GL_TEXTURE_2D);
+	glPushMatrix();
 
 	SDL_Color sdlColor = { (unsigned char)color[0], (unsigned char)color[1], (unsigned char)color[2], 255 };
 	
@@ -107,6 +108,7 @@ void Drawing::drawText(const char* message, Vector2 position, int index, int col
 		glVertex2d(vectors[x].x, vectors[x].y);
 	}
 	glEnd();
+	glPopMatrix();
 	glDisable(GL_TEXTURE_2D);
 }
 
