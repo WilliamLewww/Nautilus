@@ -141,10 +141,10 @@ bool Vector2::operator!=(Vector2 vector) {
 	return false;
 }
 
-std::ostream &operator<<(std::ostream &os, Vector2 const &m) {
-	return os << m.x << "," << m.y;
+bool Vector2::operator<(const Vector2& vector) const {
+	return x < vector.x || (x == vector.x && y < vector.y);
 }
 
-bool Vector2::operator<(const Vector2& vector) const {
-	return true;
+std::ostream &operator<<(std::ostream &os, Vector2 const &m) {
+	return os << m.x << "," << m.y;
 }

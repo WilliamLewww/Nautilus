@@ -1,6 +1,7 @@
 #include "nautilus.h"
 
 void Nautilus::anchorSetHook(RectangleIndex* rectangleIndex) { 
+	damageDredgeLine(rectangleIndex);
 	anchor.rectangleIndex = rectangleIndex;
 	anchor.hooked = true; 
 };
@@ -34,6 +35,7 @@ void Nautilus::setupStats() {
 	stats.mana_regen   				= 7.45;
 	stats.attack_damage  			= 61.0;
 	stats.attack_speed   			= 0.613;
+	stats.ability_power				= 0;
 	stats.armor 		 			= 35.46;
 	stats.magic_resist   			= 32.1;
 	stats.movement_speed 			= 325;
@@ -276,14 +278,29 @@ void Nautilus::damageAuto(RectangleIndex* rectangleIndex, bool empowered) {
 	}
 }
 
+void Nautilus::damageDredgeLine(RectangleIndex* rectangleIndex) {
+	*rectangleIndex->health -= damageAbilities.dredge_line[cooldowns.dredge_line_level] + (0.75 * stats.ability_power);
+	displayDamage(*rectangleIndex->position, damageAbilities.dredge_line[cooldowns.dredge_line_level] + (0.75 * stats.ability_power));
+}
+
 void Nautilus::displayDamage(Vector2 position, double damage) {
-	damageDisplayMap[position] = Vector2(damage, 0.0);
+	damageDisplayMap.emplace(position, Vector2(damage, 0.0));
 }
 
 void Nautilus::updateDamageDisplay(float elapsedTimeSeconds) {
+	std::vector<Vector2> tempList;
 	for (auto& pair : damageDisplayMap) {
 		pair.second.y += elapsedTimeSeconds;
+		if (pair.second.y > 0.83) {
+			tempList.push_back(pair.first);
+		}
 	}
+
+	for (Vector2 position : tempList) {
+		std::multimap<Vector2,Vector2>::iterator it = damageDisplayMap.find(position);
+		damageDisplayMap.erase(it);
+	}
+	tempList.clear();
 }
 
 void Nautilus::draw() {
@@ -310,7 +327,7 @@ void Nautilus::draw() {
 
 	for (auto& pair : damageDisplayMap) {
 		std::string damage = std::to_string((int)ceil(pair.second.x));
-		drawing.drawText(damage.c_str(), Vector2(pair.first) + Vector2(25, -15 - (pair.second.y * 8)), 2);
+		drawing.drawText(damage.c_str(), Vector2(pair.first) + Vector2(25, - 15.0 - (pair.second.y * 25.0)), 2);
 	}
 }
 

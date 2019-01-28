@@ -23,6 +23,14 @@ struct NautilusCooldownsParent {
 	double depth_charge[3] = { 120, 100, 80 };
 };
 
+struct NautilusDamageAbilities {
+	double dredge_line[5] = { 80, 120, 160, 200, 240 };
+	double titans_wrath[5] = { 30, 40, 50, 60, 70 };
+	double riptide[5] = { 55, 85, 115, 145, 175 };
+	double depth_charge_trail[3] = { 125, 175, 225 };
+	double depth_charge[3] = { 200, 325, 450 };
+};
+
 struct NautilusCooldowns {
 	double auto_attack;
 	bool can_auto_attack;
@@ -74,6 +82,8 @@ private:
 	NautilusCooldowns cooldowns;
 	NautilusCooldownsParent cooldownsParent;
 
+	NautilusDamageAbilities damageAbilities;
+
 	Stats stats;
 	StatsUpgrade statsUpgrade;
 
@@ -102,7 +112,7 @@ private:
 	bool queueDredgeLine = false, cancelDredgeLine = false;
 	Anchor anchor;
 
-	std::map<Vector2, Vector2> damageDisplayMap;
+	std::multimap<Vector2,Vector2> damageDisplayMap;
 
 	inline Vector2 center() { return Vector2(position.x + (width / 2), position.y + (height / 2)); };
 	inline void resetPath() { pathVertices.clear(); };
@@ -117,6 +127,7 @@ private:
 	void autoAttack(float elapsedTimeSeconds);
 
 	void damageAuto(RectangleIndex* rectangleIndex, bool empowered);
+	void damageDredgeLine(RectangleIndex* rectangleIndex);
 
 	void displayDamage(Vector2 position, double damage);
 	void updateDamageDisplay(float elapsedTimeSeconds);
@@ -139,6 +150,7 @@ public:
 	inline void resetSelectedEntity() { this->selectedRectangleIndex = nullptr; }
 
 	inline bool anchorIsAlive() { return anchor.alive; };
+	inline bool anchorIsHooked() { return anchor.hooked; };
 	void anchorSetHook(RectangleIndex* rectangleIndex);
 	bool checkAnchorCollision(Vector2 position, int width, int height);
 

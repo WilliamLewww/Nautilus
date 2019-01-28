@@ -14,7 +14,7 @@ void World::update() {
 	nautilus.update(timer.getTimeSeconds());
 
 	for (Dummy& dummy : dummyList) {
-		if (nautilus.anchorIsAlive()) {
+		if (!nautilus.anchorIsHooked() && nautilus.anchorIsAlive()) {
 			if (nautilus.checkAnchorCollision(dummy.getPosition(), dummy.getWidth(), dummy.getHeight())) {
 				nautilus.anchorSetHook(dummy.getRectangleIndexAddr());
 			}
