@@ -217,16 +217,19 @@ void Nautilus::initializeTitansWrath() {
 	helmet.timeLeft = durationsParent.titans_wrath;
 	shield += damageAbilities.titans_wrath_shield[cooldowns.titans_wrath_level] + (damageAbilities.titans_wrath_shield_scale[cooldowns.titans_wrath_level] * stats.health);
 
+	autoReset();
 	cooldowns.can_titans_wrath = false;
 	cooldowns.titans_wrath = cooldownsParent.titans_wrath[cooldowns.titans_wrath_level];
 }
 
 void Nautilus::addTitansWrathEffect(RectangleIndex* rectangleIndex) {
-	*rectangleIndex->health -= damageAbilities.titans_wrath[cooldowns.titans_wrath_level] + (0.4 * stats.ability_power);
-	generateDamageDisplay(*rectangleIndex->position, damageAbilities.titans_wrath[cooldowns.titans_wrath_level] + (0.4 * stats.ability_power), 1);
+	if (std::find(helmet.hitRectangleList.begin(), helmet.hitRectangleList.end(), rectangleIndex) == helmet.hitRectangleList.end()) {
+		*rectangleIndex->health -= damageAbilities.titans_wrath[cooldowns.titans_wrath_level] + (0.4 * stats.ability_power);
+		generateDamageDisplay(*rectangleIndex->position, damageAbilities.titans_wrath[cooldowns.titans_wrath_level] + (0.4 * stats.ability_power), 1);
 
-	helmet.hitRectangleList.push_back(rectangleIndex);
-	helmet.tickList.push_back(Vector2(0.0, 0.0));
+		helmet.hitRectangleList.push_back(rectangleIndex);
+		helmet.tickList.push_back(Vector2(0.0, 0.0));
+	}
 }
 
 void Nautilus::castTitansWrath(float elapsedTimeSeconds) {

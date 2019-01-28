@@ -137,6 +137,7 @@ private:
 	inline Vector2 center() { return Vector2(position.x + (width / 2), position.y + (height / 2)); };
 	inline void resetPath() { pathVertices.clear(); };
 	inline void resetRoot() { isRooted = 0; };
+	inline void autoReset() { cooldowns.auto_attack = 0; cooldowns.can_auto_attack = true; };
 
 	void setupStats();
 	void setupCooldowns();
