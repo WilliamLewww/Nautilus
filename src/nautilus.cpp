@@ -362,7 +362,7 @@ void Nautilus::updateDamageDisplay(float elapsedTimeSeconds) {
 	std::vector<Vector2> tempList;
 	for (auto& pair : damageDisplayMap) {
 		pair.second.y += elapsedTimeSeconds;
-		if (pair.second.y > 0.64) {
+		if (pair.second.y > 0.43) {
 			tempList.push_back(pair.first);
 		}
 	}

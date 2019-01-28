@@ -14,7 +14,7 @@ struct NautilusDurationsParent {
 	double auto_attack_current_frame = 0.0;
 	double staggering_blow[5] = { 0.5, 0.75, 1, 1.25, 1.5 };
 	double titans_wrath = 6.0;
-	double titans_wrath_effect = 2.0;
+	double titans_wrath_effect = 1.0;
 	double depth_charge[3] = { 1, 1.5, 2 };
 };
 
