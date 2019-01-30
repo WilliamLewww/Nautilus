@@ -90,7 +90,7 @@ void Drawing::drawText(const char* message, Vector2 position, int index, int col
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, sFont->w, sFont->h, 0, GL_BGRA, GL_UNSIGNED_BYTE, sFont->pixels);
-
+	
 	int width, height;
 	TTF_SizeText(font[index], message, &width, &height);
 

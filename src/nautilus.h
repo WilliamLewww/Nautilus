@@ -91,6 +91,8 @@ private:
 	double health, mana;
 	double shield;
 
+	StatusBar statusBar;
+
 	NautilusDurationsParent durationsParent;
 
 	NautilusCooldowns cooldowns;
@@ -167,6 +169,9 @@ private:
 	void castDepthCharge();
 
 	void updateTimer(float elapsedTimeSeconds);
+
+	void drawStatus();
+	void drawDebug();
 public:
 	inline void setSelectedEntity(RectangleIndex* selectedRectangleIndex) {  this->selectedRectangleIndex = selectedRectangleIndex; };
 	inline void resetSelectedEntity() { this->selectedRectangleIndex = nullptr; }
@@ -181,5 +186,4 @@ public:
 	void update(float elapsedTimeSeconds);
 
 	void draw();
-	void drawDebug();
 };

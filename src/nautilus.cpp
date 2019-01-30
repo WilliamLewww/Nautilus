@@ -26,6 +26,7 @@ void Nautilus::initialize() {
 	health = stats.health;
 	mana = stats.mana;
 	gui.linkAbilities(&cooldowns.dredge_line, &cooldowns.titans_wrath, &cooldowns.riptide, &cooldowns.depth_charge);
+	linkStatusBar(statusBar, &stats.health, &health, &mana, &level);
 }
 
 void Nautilus::setupStats() {
@@ -407,6 +408,13 @@ void Nautilus::draw() {
 			drawing.drawText(damage.c_str(), Vector2(pair.first) + Vector2(25, - 15.0 - (pair.second.y * 25.0)), 2, colorDamageMagic);
 		}
 	}
+
+	drawStatus();
+}
+
+void Nautilus::drawStatus() {
+	updateStatusBar(statusBar, position, width);
+	drawStatusBar(statusBar);
 }
 
 void Nautilus::drawDebug() {

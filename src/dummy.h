@@ -1,16 +1,20 @@
 #pragma once
 #include "core/drawing.h"
 #include "rectangle_index.h"
+#include "stats.h"
 
 class Dummy {
 private:
 	RectangleIndex rectangleIndex;
+	StatusBar statusBar;
 
 	Vector2 position;
 	int width, height;
 
 	double isRooted;
-	double health = 99999, mana = 99999;
+	int level = 1;
+	double totalHealth = 700;
+	double health, mana;
 
 	int color[3] = { 140, 87, 37 };
 	int colorRoot[3] = { 110, 57, 7 };
