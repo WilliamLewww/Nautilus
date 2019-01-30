@@ -13,7 +13,7 @@ private:
 
 	double isRooted;
 	int level = 1;
-	double totalHealth = 700;
+	double totalHealth = 1200;
 	double health, mana;
 
 	bool regenerate = false;

@@ -27,9 +27,7 @@ struct StatusBar {
 	Vector2 position;
 	double healthWidth;
 
-	int healthLittleTickCount;
-	double healthLittleTickRemainder;
-	int healthLargeTickCount;
+	int healthTickCount;
 };
 
 double getActualSpeed(Stats stats);
