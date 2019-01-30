@@ -22,6 +22,23 @@ void Dummy::update(float elapsedTimeSeconds) {
 			else { isRooted -= elapsedTimeSeconds; }
 		}
 	}
+
+	if (health < 0) { regenerate = true; }
+	if (regenerate) {
+		if (regenerateTimer >= 0.25) {
+			if (health + 100 >= totalHealth) {
+				health = totalHealth;
+				regenerate = false;
+			}
+			else {
+				health += 100;
+			}
+			regenerateTimer = 0.0;
+		}
+		else {
+			regenerateTimer += elapsedTimeSeconds;
+		}
+	}
 }
 
 void Dummy::draw() {

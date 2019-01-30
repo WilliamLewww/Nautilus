@@ -16,6 +16,9 @@ private:
 	double totalHealth = 700;
 	double health, mana;
 
+	bool regenerate = false;
+	double regenerateTimer = 0;
+
 	int color[3] = { 140, 87, 37 };
 	int colorRoot[3] = { 110, 57, 7 };
 public:

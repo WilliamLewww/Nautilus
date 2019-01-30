@@ -34,7 +34,9 @@ void updateStatusBar(StatusBar& statusBar, Vector2 position, int width) {
 
 void drawStatusBar(StatusBar& statusBar) {
 	drawing.drawRect(statusBar.position, statusBar.width, statusBar.height, colorStatusBarBackground);
-	drawing.drawRect(statusBar.position + Vector2(1, 1), statusBar.healthWidth, statusBar.height - 2, colorStatusBarHealth);
+	if (statusBar.health > 0) {
+		drawing.drawRect(statusBar.position + Vector2(1, 1), statusBar.healthWidth, statusBar.height - 2, colorStatusBarHealth);
+	}
 
 	for (int x = 0; x < statusBar.healthLittleTickCount; x++) {
 		Vector2 tickPosition = statusBar.position + Vector2((x + 1) * ((statusBar.width - 2.0) / (statusBar.healthLittleTickCount + 1.0)), 0);
