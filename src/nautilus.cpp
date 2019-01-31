@@ -98,7 +98,7 @@ void Nautilus::update(float elapsedTimeSeconds) {
 		else { clickAlpha -= 25; }
 	}
 
-	if (input.checkKeyDown(SDLK_q) && cooldowns.can_dredge_line) { 
+	if (input.checkKeyDown(SDLK_q) && cooldowns.can_dredge_line && isRooted == 0) { 
 		if (input.getRightButtonPress()) {
 			queueDredgeLine = false;
 			cancelDredgeLine = true;
@@ -109,15 +109,21 @@ void Nautilus::update(float elapsedTimeSeconds) {
 
 			anchor.hint = true;
 			Vector2 difference = Vector2(input.getMouseXCamera(), input.getMouseYCamera()) - center();
-			anchor.hintPosition = center() + Vector2((difference.x / (abs(difference.x) + abs(difference.y))), (difference.y / (abs(difference.x) + abs(difference.y)))) * 325;
+			double degree;
+			if (difference.x > 0) { degree = atan(difference.y / difference.x); }
+			else { degree = atan(difference.y / difference.x) + drawing.PI; }
+			anchor.hintPosition = Vector2((cos(degree) * 325) + center().x, (sin(degree) * 325) + center().y);
 		}
 	}
 	else { anchor.hint = false; cancelDredgeLine = false; }
 	if (!anchor.alive && queueDredgeLine && !input.checkKeyDown(SDLK_q)) { anchor.alive = true; queueDredgeLine = false; initializeDredgeLine(input.getMouseXCamera(), input.getMouseYCamera()); }
 	if (anchor.alive) {	anchor.hint = false; castDredgeLine(elapsedTimeSeconds); }
 
-	if (input.checkKeyDown(SDLK_w) && cooldowns.can_titans_wrath) { initializeTitansWrath(); }
+	if (input.checkKeyDown(SDLK_w) && cooldowns.can_titans_wrath && isRooted == 0) { initializeTitansWrath(); }
 	castTitansWrath(elapsedTimeSeconds);
+
+	if (input.checkKeyDown(SDLK_e) && cooldowns.can_riptide && isRooted == 0) { initializeRiptide(); }
+	castRiptide(elapsedTimeSeconds);
 
 	if (isRooted == 0) { 
 		followPath(elapsedTimeSeconds);
@@ -154,12 +160,15 @@ void Nautilus::updateTimer(float elapsedTimeSeconds) {
 void Nautilus::initializeDredgeLine(int x, int y) {
 	isRooted = -1;
 	resetPath();
+	autoReset();
 	cooldowns.can_dredge_line = false;
 	cooldowns.dredge_line = cooldownsParent.staggering_blow[cooldowns.dredge_line_level];
 
 	anchor.position = Vector2(center().x - (anchor.width / 2), center().y - (anchor.height / 2));
 	anchor.direction = Vector2(x, y) - center();
-	anchor.distance = 0;
+	if (anchor.direction.x > 0) { anchor.angle = atan(anchor.direction.y / anchor.direction.x); }
+	else { anchor.angle = atan(anchor.direction.y / anchor.direction.x) + drawing.PI; }
+	anchor.magnitude = 0;
 }
 
 void Nautilus::castDredgeLine(float elapsedTimeSeconds) {
@@ -175,9 +184,7 @@ void Nautilus::castDredgeLine(float elapsedTimeSeconds) {
 			anchor.position.x = anchor.rectangleIndex->position->x + (*anchor.rectangleIndex->width / 2) - (anchor.width / 2);
 			anchor.position.y = anchor.rectangleIndex->position->y + (*anchor.rectangleIndex->height / 2) - (anchor.height / 2);
 		
-			if (abs(difference.x) + abs(difference.y) < 50) {
-				anchor.bounce = true;
-			}
+			if (abs(difference.x) + abs(difference.y) < 50) { anchor.bounce = true; }
 		}
 		else {
 			if (abs(difference.x) + abs(difference.y) > 75) {
@@ -198,15 +205,14 @@ void Nautilus::castDredgeLine(float elapsedTimeSeconds) {
 		}
 	}
 	else {
-		float movementX = (anchor.direction.x / (abs(anchor.direction.x) + abs(anchor.direction.y))) * 682.5 * elapsedTimeSeconds;
-		float movementY = (anchor.direction.y / (abs(anchor.direction.x) + abs(anchor.direction.y))) * 682.5 * elapsedTimeSeconds;
-
-		anchor.position.x += movementX;
-		anchor.position.y += movementY;
-
-		anchor.distance += abs(movementX) + abs(movementY);
-
-		if (anchor.distance > 325) {
+		if (anchor.magnitude < anchor.chainLength) {
+			if (anchor.magnitude + (anchor.hookSpeed * elapsedTimeSeconds) >= anchor.chainLength) {
+				anchor.magnitude = anchor.chainLength;
+			}
+			else { anchor.magnitude += anchor.hookSpeed * elapsedTimeSeconds; }
+			anchor.position = Vector2(cos(anchor.angle) * anchor.magnitude, sin(anchor.angle) * anchor.magnitude);
+		}
+		else {
 			anchor.alive = false;
 			resetRoot();
 		}
@@ -267,6 +273,30 @@ void Nautilus::castTitansWrath(float elapsedTimeSeconds) {
 			helmet.hitRectangleList.erase(helmet.hitRectangleList.begin() + x);
 			helmet.tickList.erase(helmet.tickList.begin() + x);
 			x -= 1;
+		}
+	}
+}
+
+void Nautilus::initializeRiptide() {
+	isRooted = -1;
+	resetPath();
+	autoReset();
+
+	cooldowns.can_riptide = false;
+	cooldowns.riptide = cooldownsParent.riptide[cooldowns.riptide_level];
+	riptide.alive = true;
+	riptide.stage = 0;
+}
+
+void Nautilus::castRiptide(float elapsedTimeSeconds) {
+	if (riptide.alive) {
+		if (riptide.explosionPositionList.size() == 0) {
+			double distance = 100;
+			int count = 360;
+
+			for (int x = 0; x < count; x++) {
+				riptide.explosionPositionList.push_back(Vector2((cos(drawing.degreeToRadians(x * 360 / count)) * distance) + center().x - (riptide.explosionWidth / 2), (sin(drawing.degreeToRadians(x * 360 / count)) * distance) + center().y - (riptide.explosionHeight / 2)));
+			}
 		}
 	}
 }
@@ -397,6 +427,12 @@ void Nautilus::draw() {
 	if (anchor.alive) {
 		drawing.drawLine(center(), anchor.position + Vector2(anchor.width / 2, anchor.height / 2), anchor.colorChain);
 		drawing.drawRect(anchor.position, anchor.width, anchor.height, anchor.colorAnchor);
+	}
+
+	if (riptide.alive) {
+		for (Vector2 explosionPosition : riptide.explosionPositionList) {
+			drawing.drawRect(explosionPosition, riptide.explosionWidth, riptide.explosionHeight);
+		}
 	}
 
 	for (auto& pair : damageDisplayMap) {

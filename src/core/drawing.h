@@ -15,6 +15,10 @@ private:
 public:
 	const double PI = 3.14159265359;
 
+	inline double degreeToRadians(double degree) {
+		return (degree * (PI / 180.0));
+	}
+
 	void drawText(const char* message, Vector2 position, int index);
 	void drawText(const char* message, Vector2 position, int index, int color[3]);
 	

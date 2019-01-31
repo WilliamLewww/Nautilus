@@ -69,7 +69,6 @@ void Drawing::drawText(const char* message, Vector2 position, int index, int col
 	};
 
 	glEnable(GL_TEXTURE_2D);
-	glPushMatrix();
 
 	SDL_Color sdlColor = { (unsigned char)color[0], (unsigned char)color[1], (unsigned char)color[2], 255 };
 	
@@ -108,7 +107,6 @@ void Drawing::drawText(const char* message, Vector2 position, int index, int col
 		glVertex2d(vectors[x].x, vectors[x].y);
 	}
 	glEnd();
-	glPopMatrix();
 	glDisable(GL_TEXTURE_2D);
 }
 
@@ -385,7 +383,6 @@ void Drawing::drawLine(Vector2 position, int width, int thickness, int color[3],
 
 void Drawing::drawLineStrip(Vector2 *points, int count, Vector2 position, float scale, int color[3]) {
 	glBegin(GL_LINE_STRIP);
-	//glEnable(GL_LINE_SMOOTH);
 	glColor4f(convertColorFloatToRGB(color[0]), convertColorFloatToRGB(color[1]), convertColorFloatToRGB(color[2]), 1);
 	for (int x = 0; x < count; x++) { glVertex2f((points[x].x * scale) + position.x - (configuration.getScreenWidth() / 2), (points[x].y * scale) + position.y - (configuration.getScreenHeight() / 2)); }
 	glEnd();
@@ -393,7 +390,6 @@ void Drawing::drawLineStrip(Vector2 *points, int count, Vector2 position, float 
 
 void Drawing::drawLineStrip(std::vector<Vector2> points, int color[3]) {
 	glBegin(GL_LINE_STRIP);
-	//glEnable(GL_LINE_SMOOTH);
 	glColor4f(convertColorFloatToRGB(color[0]), convertColorFloatToRGB(color[1]), convertColorFloatToRGB(color[2]), 1);
 	for (int x = 0; x < points.size(); x++) { glVertex2f(points[x].x - (configuration.getScreenWidth() / 2), points[x].y - (configuration.getScreenHeight() / 2)); }
 	glEnd();
@@ -401,7 +397,6 @@ void Drawing::drawLineStrip(std::vector<Vector2> points, int color[3]) {
 
 void Drawing::drawLineStrip(std::vector<Vector2> points, int color[3], int alpha) {
 	glBegin(GL_LINE_STRIP);
-	//glEnable(GL_LINE_SMOOTH);
 	glColor4f(convertColorFloatToRGB(color[0]), convertColorFloatToRGB(color[1]), convertColorFloatToRGB(color[2]), convertColorFloatToRGB(alpha));
 	for (int x = 0; x < points.size(); x++) { glVertex2f(points[x].x - (configuration.getScreenWidth() / 2), points[x].y - (configuration.getScreenHeight() / 2)); }
 	glEnd();
@@ -409,7 +404,6 @@ void Drawing::drawLineStrip(std::vector<Vector2> points, int color[3], int alpha
 
 void Drawing::drawLineStrip(std::vector<Vector2> points, int offset, int color[3], int alpha) {
 	glBegin(GL_LINE_STRIP);
-	//glEnable(GL_LINE_SMOOTH);
 	glColor4f(convertColorFloatToRGB(color[0]), convertColorFloatToRGB(color[1]), convertColorFloatToRGB(color[2]), convertColorFloatToRGB(alpha));
 	for (int x = 0; x < points.size(); x++) { glVertex2f(points[x].x - (configuration.getScreenWidth() / 2), offset + points[x].y - (configuration.getScreenHeight() / 2)); }
 	glEnd();
@@ -417,7 +411,6 @@ void Drawing::drawLineStrip(std::vector<Vector2> points, int offset, int color[3
 
 void Drawing::drawLineStrip(std::vector<Vector2> points, std::vector<Vector2> pointsB, int color[3]) {
 	glBegin(GL_LINE_STRIP);
-	//glEnable(GL_LINE_SMOOTH);
 	glColor4f(convertColorFloatToRGB(color[0]), convertColorFloatToRGB(color[1]), convertColorFloatToRGB(color[2]), 1);
 	for (int x = 0; x < points.size(); x++) { glVertex2f(((points[x].x + pointsB[x].x) / 2) - (configuration.getScreenWidth() / 2), ((points[x].y + pointsB[x].y) / 2) - (configuration.getScreenHeight() / 2)); }
 	glEnd();
@@ -425,7 +418,6 @@ void Drawing::drawLineStrip(std::vector<Vector2> points, std::vector<Vector2> po
 
 void Drawing::drawLineStrip(std::vector<Vector2> points, std::vector<Vector2> pointsB, int offset, int color[3], int alpha) {
 	glBegin(GL_LINE_STRIP);
-	//glEnable(GL_LINE_SMOOTH);
 	glColor4f(convertColorFloatToRGB(color[0]), convertColorFloatToRGB(color[1]), convertColorFloatToRGB(color[2]), convertColorFloatToRGB(alpha));
 	for (int x = 0; x < points.size(); x++) { glVertex2f(((points[x].x + pointsB[x].x) / 2) - (configuration.getScreenWidth() / 2), offset + ((points[x].y + pointsB[x].y) / 2) - (configuration.getScreenHeight() / 2)); }
 	glEnd();
@@ -438,7 +430,6 @@ void Drawing::drawLineStrip(Vector2 position, double width, double height, std::
 	glRotatef(-angle, 0, 0, 1);
 	glTranslatef(-(position.x + (width / 2) - (configuration.getScreenWidth() / 2)), -(position.y + (height / 2) - (configuration.getScreenHeight() / 2)), 0);
 	glBegin(GL_LINE_STRIP);
-	//glEnable(GL_LINE_SMOOTH);
 	glColor4f(convertColorFloatToRGB(color[0]), convertColorFloatToRGB(color[1]), convertColorFloatToRGB(color[2]), 1);
 	for (int x = 0; x < vertices.size(); x++) { 
 		glVertex2f(position.x + vertices[x].x - (configuration.getScreenWidth() / 2), position.y + vertices[x].y - (configuration.getScreenHeight() / 2)); 
@@ -450,7 +441,6 @@ void Drawing::drawLineStrip(Vector2 position, double width, double height, std::
 
 void Drawing::drawPolygon(std::vector<Vector2> points, int color, int alpha) {
 	glBegin(GL_POLYGON);
-	//glEnable(GL_LINE_SMOOTH);
 	glColor4f(convertColorFloatToRGB(color), convertColorFloatToRGB(color), convertColorFloatToRGB(color), convertColorFloatToRGB(alpha));
 	for (int x = 0; x < points.size(); x++) { glVertex2f(points[x].x - (configuration.getScreenWidth() / 2), points[x].y - (configuration.getScreenHeight() / 2)); }
 	glEnd();
@@ -458,7 +448,6 @@ void Drawing::drawPolygon(std::vector<Vector2> points, int color, int alpha) {
 
 void Drawing::drawPolygon(std::vector<Vector2> points, int color[3], int alpha) {
 	glBegin(GL_POLYGON);
-	//glEnable(GL_LINE_SMOOTH);
 	glColor4f(convertColorFloatToRGB(color[0]), convertColorFloatToRGB(color[1]), convertColorFloatToRGB(color[2]), convertColorFloatToRGB(alpha));
 	for (int x = 0; x < points.size(); x++) { glVertex2f(points[x].x - (configuration.getScreenWidth() / 2), points[x].y - (configuration.getScreenHeight() / 2)); }
 	glEnd();
@@ -466,7 +455,6 @@ void Drawing::drawPolygon(std::vector<Vector2> points, int color[3], int alpha) 
 
 void Drawing::drawPolygon(Vector2 position, std::vector<Vector2> vertices, int color[3], int alpha) {
 	glBegin(GL_POLYGON);
-	//glEnable(GL_LINE_SMOOTH);
 	glColor4f(convertColorFloatToRGB(color[0]), convertColorFloatToRGB(color[1]), convertColorFloatToRGB(color[2]), convertColorFloatToRGB(alpha));
 	for (int x = 0; x < vertices.size(); x++) { 
 		glVertex2f(position.x + vertices[x].x - (configuration.getScreenWidth() / 2), position.y + vertices[x].y - (configuration.getScreenHeight() / 2)); }
@@ -480,7 +468,6 @@ void Drawing::drawPolygon(Vector2 position, double width, double height, std::ve
 	glRotatef(-angle, 0, 0, 1);
 	glTranslatef(-(position.x + (width / 2) - (configuration.getScreenWidth() / 2)), -(position.y + (height / 2) - (configuration.getScreenHeight() / 2)), 0);
 	glBegin(GL_POLYGON);
-	//glEnable(GL_LINE_SMOOTH);
 	glColor4f(convertColorFloatToRGB(color[0]), convertColorFloatToRGB(color[1]), convertColorFloatToRGB(color[2]), convertColorFloatToRGB(alpha));
 	for (int x = 0; x < vertices.size(); x++) { 
 		glVertex2f(position.x + vertices[x].x - (configuration.getScreenWidth() / 2), position.y + vertices[x].y - (configuration.getScreenHeight() / 2)); }

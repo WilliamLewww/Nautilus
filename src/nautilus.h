@@ -63,8 +63,11 @@ struct NautilusCooldowns {
 
 struct Anchor {
 	Vector2 position, direction, hintPosition;
+	double magnitude, chainLength = 325;
+	double angle;
+	int hookSpeed = 100;
+
 	int width = 50, height = 50;
-	float distance = 0;
 
 	bool alive = false;
 	bool hint = false;
@@ -83,6 +86,16 @@ struct Helmet {
 
 	std::vector<RectangleIndex*> hitRectangleList;
 	std::vector<Vector2> tickList;
+};
+
+struct Riptide {
+	bool alive = false;
+	int stage;
+
+	std::vector<RectangleIndex*> hitRectangleList;
+
+	std::vector<Vector2> explosionPositionList;
+	int explosionWidth = 30, explosionHeight = 30;
 };
 
 class Nautilus {
@@ -130,9 +143,10 @@ private:
 	RectangleIndex* selectedRectangleIndex;
 
 	bool queueDredgeLine = false, cancelDredgeLine = false;
-	Anchor anchor;
 
+	Anchor anchor;
 	Helmet helmet;
+	Riptide riptide;
 
 	std::multimap<Vector2,Vector3> damageDisplayMap;
 
@@ -163,7 +177,7 @@ private:
 	void addTitansWrathEffect(RectangleIndex* rectangleIndex);
 
 	void initializeRiptide();
-	void castRiptide();
+	void castRiptide(float elapsedTimeSeconds);
 
 	void initializeDepthCharge(Vector2* position);
 	void castDepthCharge();
