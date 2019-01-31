@@ -65,7 +65,7 @@ struct Anchor {
 	Vector2 position, direction, hintPosition;
 	double magnitude, chainLength = 325;
 	double angle;
-	int hookSpeed = 100;
+	int hookSpeed = 575;
 
 	int width = 50, height = 50;
 
@@ -90,10 +90,11 @@ struct Helmet {
 
 struct Riptide {
 	bool alive = false;
-	int stage;
-	double timer;
+	int stage = 0;
+	double timer = 0;
 
-	int distances[3] = { 100, 150, 200 };
+	int explosionCounts[3] = { 8, 12, 15 };
+	int distances[3] = { 25, 50, 75 };
 
 	std::vector<RectangleIndex*> hitRectangleList;
 
@@ -196,7 +197,11 @@ public:
 	inline bool anchorIsAlive() { return anchor.alive; };
 	inline bool anchorIsHooked() { return anchor.hooked; };
 	void anchorSetHook(RectangleIndex* rectangleIndex);
-	bool checkAnchorCollision(Vector2 position, int width, int height);
+
+	inline bool riptideIsAlive() { return riptide.alive; };
+
+	bool checkAnchorCollision(RectangleIndex* rectangleIndex);
+	bool checkRiptideCollision(RectangleIndex* rectangleIndex);
 
 	void initialize();
 

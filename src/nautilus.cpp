@@ -6,14 +6,18 @@ void Nautilus::anchorSetHook(RectangleIndex* rectangleIndex) {
 	anchor.hooked = true; 
 };
 
-bool Nautilus::checkAnchorCollision(Vector2 position, int width, int height) {
-	if (anchor.position.x + anchor.width >= position.x &&
-		anchor.position.x <= position.x + width &&
-		anchor.position.y + anchor.height >= position.y &&
-		anchor.position.y <= position.y + height) {
+bool Nautilus::checkAnchorCollision(RectangleIndex* rectangleIndex) {
+	if (anchor.position.x + anchor.width >= rectangleIndex->position->x &&
+		anchor.position.x <= rectangleIndex->position->x + *rectangleIndex->width &&
+		anchor.position.y + anchor.height >= rectangleIndex->position->y &&
+		anchor.position.y <= rectangleIndex->position->y + *rectangleIndex->height) {
 
 		return true;
 	}
+	return false;
+}
+
+bool Nautilus::checkRiptideCollision(RectangleIndex* rectangleIndex) {
 	return false;
 }
 
@@ -210,7 +214,7 @@ void Nautilus::castDredgeLine(float elapsedTimeSeconds) {
 				anchor.magnitude = anchor.chainLength;
 			}
 			else { anchor.magnitude += anchor.hookSpeed * elapsedTimeSeconds; }
-			anchor.position = Vector2(cos(anchor.angle) * anchor.magnitude, sin(anchor.angle) * anchor.magnitude);
+			anchor.position = Vector2(cos(anchor.angle) * anchor.magnitude, sin(anchor.angle) * anchor.magnitude) + center() - Vector2(anchor.width / 2, anchor.height / 2);
 		}
 		else {
 			anchor.alive = false;
@@ -286,28 +290,34 @@ void Nautilus::initializeRiptide() {
 	cooldowns.riptide = cooldownsParent.riptide[cooldowns.riptide_level];
 	riptide.alive = true;
 	riptide.stage = 0;
+	riptide.timer = 0;
+	riptide.explosionPositionList.clear();
 }
 
 void Nautilus::castRiptide(float elapsedTimeSeconds) {
 	if (riptide.alive) {
-		if (riptide.explosionPositionList.size() == 0) {
-			int count = 360;
+		if (riptide.stage < 3) {
+			if (riptide.explosionPositionList.size() == 0) {
+				int distance = riptide.distances[riptide.stage];
+				int count = riptide.explosionCounts[riptide.stage];
 
-			for (int x = 0; x < count; x++) {
-				riptide.explosionPositionList.push_back(Vector2((cos(drawing.degreeToRadians(x * 360 / count)) * riptide.distances[riptide.stage]) + center().x - (riptide.explosionWidth / 2), (sin(drawing.degreeToRadians(x * 360 / count)) * riptide.distances[riptide.stage]) + center().y - (riptide.explosionHeight / 2)));
+				for (int x = 0; x < count; x++) {
+					riptide.explosionPositionList.push_back(Vector2((cos(drawing.degreeToRadians(x * 360 / count)) * distance) + center().x - (riptide.explosionWidth / 2), (sin(drawing.degreeToRadians(x * 360 / count)) * distance) + center().y - (riptide.explosionHeight / 2)));
+				}
 			}
+		}
+		else {
+			if (isRooted == -1) { isRooted = 0; }
+			riptide.alive = false;
 		}
 	}
 
-	if (timer >= 1.0) {
+	if (riptide.timer >= 0.18) { 
 		riptide.stage += 1;
 		riptide.explosionPositionList.clear();
-		riptide.timer = 0;
+		riptide.timer = 0.0;
 	}
-	else {
-		if (timer + elapsedTimeSeconds >= 1.0) { timer = 1.0; }
-		else { timer += elapsedTimeSeconds; }
-	}
+	else { riptide.timer += elapsedTimeSeconds; }
 }
 
 void Nautilus::createPath(int x, int y) {
@@ -354,7 +364,7 @@ void Nautilus::autoAttack(float elapsedTimeSeconds) {
 	if (selectedRectangleIndex != nullptr && cooldowns.can_auto_attack) {
 		Vector2 difference = Vector2(selectedRectangleIndex->position->x + (*selectedRectangleIndex->width / 2), selectedRectangleIndex->position->y + (*selectedRectangleIndex->height / 2)) - center();
 		
-		if (durationsParent.auto_attack_current_frame < stats.attack_speed * 0.75) {
+		if (durationsParent.auto_attack_current_frame < stats.attack_speed * 0.37) {
 			durationsParent.auto_attack_current_frame += elapsedTimeSeconds;
 		}
 		else {
@@ -417,6 +427,12 @@ void Nautilus::updateDamageDisplay(float elapsedTimeSeconds) {
 void Nautilus::draw() {
 	//drawDebug();
 
+	if (riptide.alive) {
+		for (Vector2 explosionPosition : riptide.explosionPositionList) {
+			drawing.drawRect(explosionPosition, riptide.explosionWidth, riptide.explosionHeight);
+		}
+	}
+
 	drawing.drawCircleFill(clickPosition, 12, colorClick, clickAlpha);
 	if (isRooted == 0) { drawing.drawRect(position, width, height, color); }
 	else { drawing.drawRect(position, width, height, colorRoot); }
@@ -436,12 +452,6 @@ void Nautilus::draw() {
 	if (anchor.alive) {
 		drawing.drawLine(center(), anchor.position + Vector2(anchor.width / 2, anchor.height / 2), anchor.colorChain);
 		drawing.drawRect(anchor.position, anchor.width, anchor.height, anchor.colorAnchor);
-	}
-
-	if (riptide.alive) {
-		for (Vector2 explosionPosition : riptide.explosionPositionList) {
-			drawing.drawRect(explosionPosition, riptide.explosionWidth, riptide.explosionHeight);
-		}
 	}
 
 	for (auto& pair : damageDisplayMap) {

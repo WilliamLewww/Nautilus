@@ -12,11 +12,19 @@ void World::initialize() {
 void World::update() {
 	for (Dummy& dummy : dummyList) { dummy.update(timer.getTimeSeconds()); }
 	nautilus.update(timer.getTimeSeconds());
-
-	for (Dummy& dummy : dummyList) {
-		if (!nautilus.anchorIsHooked() && nautilus.anchorIsAlive()) {
-			if (nautilus.checkAnchorCollision(dummy.getPosition(), dummy.getWidth(), dummy.getHeight())) {
+	
+	if (!nautilus.anchorIsHooked() && nautilus.anchorIsAlive()) {
+		for (Dummy& dummy : dummyList) {
+			if (nautilus.checkAnchorCollision(dummy.getRectangleIndexAddr())) {
 				nautilus.anchorSetHook(dummy.getRectangleIndexAddr());
+			}
+		}
+	}
+
+	if (nautilus.riptideIsAlive()) {
+		for (Dummy& dummy : dummyList) {
+			if (nautilus.checkAnchorCollision(dummy.getRectangleIndexAddr())) {
+				nautilus.checkRiptideCollision(dummy.getRectangleIndexAddr());
 			}
 		}
 	}
