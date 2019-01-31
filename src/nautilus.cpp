@@ -291,13 +291,22 @@ void Nautilus::initializeRiptide() {
 void Nautilus::castRiptide(float elapsedTimeSeconds) {
 	if (riptide.alive) {
 		if (riptide.explosionPositionList.size() == 0) {
-			double distance = 100;
 			int count = 360;
 
 			for (int x = 0; x < count; x++) {
-				riptide.explosionPositionList.push_back(Vector2((cos(drawing.degreeToRadians(x * 360 / count)) * distance) + center().x - (riptide.explosionWidth / 2), (sin(drawing.degreeToRadians(x * 360 / count)) * distance) + center().y - (riptide.explosionHeight / 2)));
+				riptide.explosionPositionList.push_back(Vector2((cos(drawing.degreeToRadians(x * 360 / count)) * riptide.distances[riptide.stage]) + center().x - (riptide.explosionWidth / 2), (sin(drawing.degreeToRadians(x * 360 / count)) * riptide.distances[riptide.stage]) + center().y - (riptide.explosionHeight / 2)));
 			}
 		}
+	}
+
+	if (timer >= 1.0) {
+		riptide.stage += 1;
+		riptide.explosionPositionList.clear();
+		riptide.timer = 0;
+	}
+	else {
+		if (timer + elapsedTimeSeconds >= 1.0) { timer = 1.0; }
+		else { timer += elapsedTimeSeconds; }
 	}
 }
 

@@ -91,6 +91,9 @@ struct Helmet {
 struct Riptide {
 	bool alive = false;
 	int stage;
+	double timer;
+
+	int distances[3] = { 100, 150, 200 };
 
 	std::vector<RectangleIndex*> hitRectangleList;
 
