@@ -23,8 +23,8 @@ void World::update() {
 
 	if (nautilus.riptideIsAlive()) {
 		for (Dummy& dummy : dummyList) {
-			if (nautilus.checkAnchorCollision(dummy.getRectangleIndexAddr())) {
-				nautilus.checkRiptideCollision(dummy.getRectangleIndexAddr());
+			if (nautilus.checkRiptideCollision(dummy.getRectangleIndexAddr())) {
+				nautilus.handleRiptideCollision(dummy.getRectangleIndexAddr());
 			}
 		}
 	}

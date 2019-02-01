@@ -18,7 +18,47 @@ bool Nautilus::checkAnchorCollision(RectangleIndex* rectangleIndex) {
 }
 
 bool Nautilus::checkRiptideCollision(RectangleIndex* rectangleIndex) {
+	for (Vector2 explosionPosition : riptide.explosionPositionList) {
+		if (explosionPosition.x + riptide.explosionWidth >= rectangleIndex->position->x &&
+			explosionPosition.x <= rectangleIndex->position->x + *rectangleIndex->width &&
+			explosionPosition.y + riptide.explosionHeight >= rectangleIndex->position->y &&
+			explosionPosition.y <= rectangleIndex->position->y + *rectangleIndex->height) {
+
+			return true;
+		}
+	}
+
 	return false;
+}
+
+void Nautilus::handleRiptideCollision(RectangleIndex* rectangleIndex) {
+	if (std::find(riptide.hitRectangleList.begin(), riptide.hitRectangleList.end(), rectangleIndex) == riptide.hitRectangleList.end()) {
+		damageRiptide(rectangleIndex, false);
+		riptide.hitRectangleList.push_back(rectangleIndex);
+		riptide.hitStage.push_back(0);
+	}
+
+	if (riptide.stage == 1) {
+		for (int x = 0; x < riptide.hitStage.size(); x++) {
+			if (rectangleIndex == riptide.hitRectangleList[x]) {
+				if (riptide.hitStage[x] < 1) {
+					damageRiptide(rectangleIndex, true);
+					riptide.hitStage[x] += 1;
+				}
+			}
+		}
+	}
+
+	if (riptide.stage == 2) {
+		for (int x = 0; x < riptide.hitStage.size(); x++) {
+			if (rectangleIndex == riptide.hitRectangleList[x]) {
+				if (riptide.hitStage[x] < 2) {
+					damageRiptide(rectangleIndex, true);
+					riptide.hitStage[x] += 1;
+				}
+			}
+		}
+	}
 }
 
 void Nautilus::initialize() {
@@ -292,6 +332,8 @@ void Nautilus::initializeRiptide() {
 	riptide.stage = 0;
 	riptide.timer = 0;
 	riptide.explosionPositionList.clear();
+	riptide.hitRectangleList.clear();
+	riptide.hitStage.clear();
 }
 
 void Nautilus::castRiptide(float elapsedTimeSeconds) {
@@ -404,6 +446,17 @@ void Nautilus::damageDredgeLine(RectangleIndex* rectangleIndex) {
 	generateDamageDisplay(*rectangleIndex->position, damageAbilities.dredge_line[cooldowns.dredge_line_level] + (0.75 * stats.ability_power), 1);
 }
 
+void Nautilus::damageRiptide(RectangleIndex* rectangleIndex, bool additional) {
+	if (!additional) {
+		*rectangleIndex->health -= damageAbilities.riptide[cooldowns.riptide_level] + (0.3 * stats.ability_power);
+		generateDamageDisplay(*rectangleIndex->position, damageAbilities.riptide[cooldowns.riptide_level] + (0.3 * stats.ability_power), 1);
+	}
+	else {
+		*rectangleIndex->health -= (damageAbilities.riptide[cooldowns.riptide_level] + (0.3 * stats.ability_power)) * 0.5;
+		generateDamageDisplay(*rectangleIndex->position, (damageAbilities.riptide[cooldowns.riptide_level] + (0.3 * stats.ability_power)) * 0.5, 1);
+	}
+}
+
 void Nautilus::generateDamageDisplay(Vector2 position, double damage, int type) {
 	damageDisplayMap.emplace(position, Vector3(damage, 0.0, type));
 }
@@ -429,7 +482,7 @@ void Nautilus::draw() {
 
 	if (riptide.alive) {
 		for (Vector2 explosionPosition : riptide.explosionPositionList) {
-			drawing.drawRect(explosionPosition, riptide.explosionWidth, riptide.explosionHeight);
+			drawing.drawRect(explosionPosition, riptide.explosionWidth, riptide.explosionHeight, riptide.explosionColor);
 		}
 	}
 
