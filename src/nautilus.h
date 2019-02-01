@@ -94,14 +94,14 @@ struct Riptide {
 	double timer = 0;
 
 	int explosionCounts[3] = { 8, 12, 15 };
-	int distances[3] = { 30, 60, 90 };
+	int distances[3] = { 40, 60, 75 };
 	int explosionColor[3] = { 132, 74, 35 };
 
 	std::vector<RectangleIndex*> hitRectangleList;
 	std::vector<int> hitStage;
 
 	std::vector<Vector2> explosionPositionList;
-	int explosionWidth = 20, explosionHeight = 20;
+	int explosionWidth = 10, explosionHeight = 10;
 };
 
 class Nautilus {
