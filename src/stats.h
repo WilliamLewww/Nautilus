@@ -9,6 +9,8 @@ struct Stats {
 	double ability_power;
 	double armor, magic_resist;
 	double movement_speed;
+
+	double speed_modifier = 0;
 };
 
 struct StatsUpgrade {
@@ -21,6 +23,7 @@ struct StatsUpgrade {
 struct StatusBar {
 	double *totalHealth;
 	double *health, *mana;
+	double *shield;
 	int* level;
 
 	int width = 80, height = 20;
@@ -33,6 +36,6 @@ struct StatusBar {
 double getActualSpeed(Stats stats);
 void upgradeStats(Stats& stats, StatsUpgrade statsUpgrade);
 
-void linkStatusBar(StatusBar& statusBar, double* totalHealth, double* health, double* mana, int* level);
+void linkStatusBar(StatusBar& statusBar, double* totalHealth, double* health, double* mana, double* shield, int* level);
 void updateStatusBar(StatusBar& statusBar, Vector2 position, int width);
 void drawStatusBar(StatusBar& statusBar);

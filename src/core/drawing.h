@@ -33,6 +33,7 @@ public:
 	void drawRect(Vector2 position, int width, int height, int color[3]);
 	void drawRect(Vector2 position, int width, int height, int color[3], int alpha);
 	void drawRect(Vector2 position, int width, int height, int color[3], double alpha);
+	void drawRectOutline(Vector2 position, int width, int height);
 	void drawRectOutline(Vector2 position, int width, int height, double angle);
 	void drawLine(Vector2 a, Vector2 b);
 	void drawLine(Vector2 a, Vector2 b, int color[3]);

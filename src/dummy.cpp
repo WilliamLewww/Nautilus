@@ -9,7 +9,19 @@ Dummy::Dummy(Vector2 position, int width, int height) {
 	health = totalHealth;
 	mana = 100;
 
-	linkStatusBar(statusBar, &totalHealth, &health, &mana, &level);
+	linkStatusBar(statusBar, &totalHealth, &health, &mana, &shield, &level);
+}
+
+bool Dummy::checkCollision(Vector2 position) {
+	if (this->position.x + width >= position.x &&
+		this->position.x <= position.x &&
+		this->position.y + height >= position.y &&
+		this->position.y <= position.y) {
+
+		return true;
+	}
+	
+	return false;
 }
 
 void Dummy::update(float elapsedTimeSeconds) {

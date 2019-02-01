@@ -70,7 +70,7 @@ void Nautilus::initialize() {
 	health = stats.health;
 	mana = stats.mana;
 	gui.linkAbilities(&cooldowns.dredge_line, &cooldowns.titans_wrath, &cooldowns.riptide, &cooldowns.depth_charge);
-	linkStatusBar(statusBar, &stats.health, &health, &mana, &level);
+	linkStatusBar(statusBar, &stats.health, &health, &mana, &shield, &level);
 }
 
 void Nautilus::setupStats() {
@@ -152,7 +152,7 @@ void Nautilus::update(float elapsedTimeSeconds) {
 			queueDredgeLine = true;
 
 			anchor.hint = true;
-			Vector2 difference = Vector2(input.getMouseXCamera(), input.getMouseYCamera()) - center();
+			Vector2 difference = input.getMouseCamera() - center();
 			double degree;
 			if (difference.x > 0) { degree = atan(difference.y / difference.x); }
 			else { degree = atan(difference.y / difference.x) + drawing.PI; }
@@ -168,6 +168,21 @@ void Nautilus::update(float elapsedTimeSeconds) {
 
 	if (input.checkKeyDown(SDLK_e) && cooldowns.can_riptide && isRooted == 0) { initializeRiptide(); }
 	castRiptide(elapsedTimeSeconds);
+
+	if (input.checkKeyDown(SDLK_r) && cooldowns.can_depth_charge && isRooted == 0) { 
+		if (input.getRightButtonPress()) {
+			queueDepthCharge = false;
+			cancelDepthCharge = true;
+			depthCharge.hint = false;
+		}
+		if (!cancelDepthCharge) {
+			queueDepthCharge = true;
+			depthCharge.hint = true;
+		}
+	}
+	else { depthCharge.hint = false; cancelDepthCharge = false; }
+	if (!depthCharge.alive && queueDepthCharge && !input.checkKeyDown(SDLK_r) && mouseOverRectangleIndex != nullptr) { depthCharge.alive = true; queueDepthCharge = false; initializeDepthCharge(mouseOverRectangleIndex); }
+	if (depthCharge.alive) { depthCharge.hint = false; castDepthCharge(elapsedTimeSeconds); }
 
 	if (isRooted == 0) { 
 		followPath(elapsedTimeSeconds);
@@ -362,6 +377,22 @@ void Nautilus::castRiptide(float elapsedTimeSeconds) {
 	else { riptide.timer += elapsedTimeSeconds; }
 }
 
+void Nautilus::initializeDepthCharge(RectangleIndex* rectangleIndex) {
+	Vector2 difference = Vector2(rectangleIndex->position->x + (*rectangleIndex->width / 2), rectangleIndex->position->y + (*rectangleIndex->height / 2)) - center();
+
+	if (abs(difference.x) + abs(difference.y) < 500) {
+		depthCharge.rectangleIndex = rectangleIndex;
+		isRooted = 0.25;
+		autoReset();
+		cooldowns.can_depth_charge = false;
+		cooldowns.depth_charge = cooldownsParent.depth_charge[cooldowns.depth_charge_level];
+	}
+}
+
+void Nautilus::castDepthCharge(float elapsedTimeSeconds) {
+
+}
+
 void Nautilus::createPath(int x, int y) {
 	pathVertices.clear();
 
@@ -491,6 +522,13 @@ void Nautilus::draw() {
 	else { drawing.drawRect(position, width, height, colorRoot); }
 
 	if (helmet.alive) { drawing.drawRect(position, width, height / 3, colorHelmet); }
+
+	if (depthCharge.hint && mouseOverRectangleIndex != nullptr) {
+		drawing.drawRectOutline(*mouseOverRectangleIndex->position - Vector2(5, 5), *mouseOverRectangleIndex->width + 10, *mouseOverRectangleIndex->height + 10);
+	}
+	if (depthCharge.alive) {
+		drawing.drawRectOutline(*depthCharge.rectangleIndex->position - Vector2(5, 5), *depthCharge.rectangleIndex->width + 10, *depthCharge.rectangleIndex->height + 10);
+	}
 
 	if (anchor.hint) {
 		drawing.drawLine(center(), anchor.hintPosition, anchor.colorChain, 100);

@@ -104,6 +104,13 @@ struct Riptide {
 	int explosionWidth = 10, explosionHeight = 10;
 };
 
+struct DepthCharge {
+	bool alive = false;
+	bool hint = false;
+
+	RectangleIndex* rectangleIndex;
+};
+
 class Nautilus {
 private:
 	int level = 1;
@@ -130,16 +137,16 @@ private:
 	Vector2 clickPosition;
 	int clickAlpha = 0;
 
-	double isRooted = 0;
+	double isRooted = 0.0;
 
 	int color[3] = { 119, 84, 81 };
 	int colorRoot[3] = { 89, 54, 51 };
-	int colorHelmet[3] = { 0, 0, 255 };
+	int colorHelmet[3] = { 79, 44, 41 };
 	int colorPath[3] = { 92, 185, 196 };
 	int colorClick[3] = { 0, 0, 0 };
 
-	int colorDamagePhysical[3] = { 255, 48, 55 };
-	int colorDamageMagic[3] = { 198, 160, 255 };
+	int colorDamagePhysical[3] = { 255, 0, 0 };
+	int colorDamageMagic[3] = { 0, 0, 255 };
 
 	std::vector<Vector2> pathVertices;
 
@@ -147,12 +154,15 @@ private:
 	double dredgeLineTimer = 0;
 
 	RectangleIndex* selectedRectangleIndex;
+	RectangleIndex* mouseOverRectangleIndex;
 
 	bool queueDredgeLine = false, cancelDredgeLine = false;
+	bool queueDepthCharge = false, cancelDepthCharge = false;
 
 	Anchor anchor;
 	Helmet helmet;
 	Riptide riptide;
+	DepthCharge depthCharge;
 
 	std::multimap<Vector2,Vector3> damageDisplayMap;
 
@@ -186,8 +196,8 @@ private:
 	void initializeRiptide();
 	void castRiptide(float elapsedTimeSeconds);
 
-	void initializeDepthCharge(Vector2* position);
-	void castDepthCharge();
+	void initializeDepthCharge(RectangleIndex* rectangleIndex);
+	void castDepthCharge(float elapsedTimeSeconds);
 
 	void updateTimer(float elapsedTimeSeconds);
 
@@ -196,6 +206,10 @@ private:
 public:
 	inline void setSelectedEntity(RectangleIndex* selectedRectangleIndex) {  this->selectedRectangleIndex = selectedRectangleIndex; };
 	inline void resetSelectedEntity() { this->selectedRectangleIndex = nullptr; }
+
+	inline void setMouseOverEntity(RectangleIndex* mouseOverRectangleIndex) { this->mouseOverRectangleIndex = mouseOverRectangleIndex; };
+	inline RectangleIndex* getMouseOverEntity() { return mouseOverRectangleIndex; };
+	inline void resetMouseOverEntity() { mouseOverRectangleIndex = nullptr; }
 
 	inline bool anchorIsAlive() { return anchor.alive; };
 	inline bool anchorIsHooked() { return anchor.hooked; };

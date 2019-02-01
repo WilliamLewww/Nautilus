@@ -5,7 +5,7 @@ int colorStatusBarHealth[3] = { 19, 173, 29 };
 int colorStatusBarTick[3] = { 0, 0, 0 };
 
 double getActualSpeed(Stats stats) {
-	return stats.movement_speed * 0.5;
+	return (stats.movement_speed * 0.5) + stats.speed_modifier;
 }
 
 void upgradeStats(Stats& stats, StatsUpgrade statsUpgrade) {
@@ -17,10 +17,11 @@ void upgradeStats(Stats& stats, StatsUpgrade statsUpgrade) {
 	stats.magic_resist += statsUpgrade.magic_resist;
 }
 
-void linkStatusBar(StatusBar& statusBar, double* totalHealth, double* health, double* mana, int* level) {
+void linkStatusBar(StatusBar& statusBar, double* totalHealth, double* health, double* mana, double* shield, int* level) {
 	statusBar.totalHealth = totalHealth;
 	statusBar.health = health;
 	statusBar.mana = mana;
+	statusBar.shield = shield;
 	statusBar.level = level;
 }
 

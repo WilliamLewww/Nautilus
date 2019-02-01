@@ -138,6 +138,30 @@ void Drawing::drawPoint(Vector2 position, int color[3], int alpha) {
 	glEnd();
 }
 
+void Drawing::drawRectOutline(Vector2 position, int width, int height) {
+	Vector2 vectors[4]{
+		Vector2(0, 0),
+		Vector2(1, 0),
+		Vector2(1, 1),
+		Vector2(0, 1)
+	};
+
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glBegin(GL_LINE_LOOP);
+	glColor4f(1, 1, 1, 1);
+	for (int x = 0; x < 4; x++) {
+		vectors[x].x *= width;
+		vectors[x].y *= height;
+		vectors[x] += Vector2(position.x, position.y);
+		vectors[x] -= Vector2(configuration.getScreenWidth() / 2, configuration.getScreenHeight() / 2);
+
+		glVertex2d(vectors[x].x, vectors[x].y);
+	}
+	glEnd();
+	glPopMatrix();
+}
+
 void Drawing::drawRectOutline(Vector2 position, int width, int height, double angle) {
 	Vector2 vectors[4]{
 		Vector2(0, 0),

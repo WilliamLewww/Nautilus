@@ -11,6 +11,16 @@ void World::initialize() {
 
 void World::update() {
 	for (Dummy& dummy : dummyList) { dummy.update(timer.getTimeSeconds()); }
+	updateNautilus();	
+}
+
+void World::updateNautilus() {
+	nautilus.resetMouseOverEntity();
+	for (Dummy& dummy : dummyList) {
+		if (nautilus.getMouseOverEntity() == nullptr && dummy.checkCollision(input.getMouseCamera())) {
+			nautilus.setMouseOverEntity(dummy.getRectangleIndexAddr());
+		}
+	}
 	nautilus.update(timer.getTimeSeconds());
 	
 	if (!nautilus.anchorIsHooked() && nautilus.anchorIsAlive()) {

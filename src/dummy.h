@@ -15,6 +15,7 @@ private:
 	int level = 1;
 	double totalHealth = 1200;
 	double health, mana;
+	double shield = 0;
 
 	bool regenerate = false;
 	double regenerateTimer = 0;
@@ -30,6 +31,8 @@ public:
 	inline Vector2 getPosition() { return position; };
 	inline int getWidth() { return width; };
 	inline int getHeight() { return height; };
+
+	bool checkCollision(Vector2 position);
 
 	void update(float elapsedTimeSeconds);
 	void draw();

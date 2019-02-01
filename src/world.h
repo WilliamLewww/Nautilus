@@ -14,6 +14,8 @@ private:
 
 	Nautilus nautilus;
 	std::vector<Dummy> dummyList;
+
+	void updateNautilus();
 public:
 	void initialize();
 	void update();
