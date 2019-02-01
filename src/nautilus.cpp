@@ -35,7 +35,7 @@ void Nautilus::handleRiptideCollision(RectangleIndex* rectangleIndex) {
 	if (std::find(riptide.hitRectangleList.begin(), riptide.hitRectangleList.end(), rectangleIndex) == riptide.hitRectangleList.end()) {
 		damageRiptide(rectangleIndex, false);
 		riptide.hitRectangleList.push_back(rectangleIndex);
-		riptide.hitStage.push_back(0);
+		riptide.hitStage.push_back(riptide.stage);
 	}
 
 	if (riptide.stage == 1) {
