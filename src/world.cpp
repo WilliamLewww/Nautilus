@@ -21,6 +21,7 @@ void World::updateNautilus() {
 			nautilus.setMouseOverEntity(dummy.getRectangleIndexAddr());
 		}
 	}
+	
 	nautilus.update(timer.getTimeSeconds());
 	
 	if (!nautilus.anchorIsHooked() && nautilus.anchorIsAlive()) {

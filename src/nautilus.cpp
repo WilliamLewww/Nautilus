@@ -176,12 +176,13 @@ void Nautilus::update(float elapsedTimeSeconds) {
 			depthCharge.hint = false;
 		}
 		if (!cancelDepthCharge) {
-			queueDepthCharge = true;
+			if (mouseOverRectangleIndex != nullptr) { queueDepthCharge = true; }
+			else { queueDepthCharge = false; }
 			depthCharge.hint = true;
 		}
 	}
 	else { depthCharge.hint = false; cancelDepthCharge = false; }
-	if (!depthCharge.alive && queueDepthCharge && !input.checkKeyDown(SDLK_r) && mouseOverRectangleIndex != nullptr) { depthCharge.alive = true; queueDepthCharge = false; initializeDepthCharge(mouseOverRectangleIndex); }
+	if (!depthCharge.alive && queueDepthCharge && !input.checkKeyDown(SDLK_r)) { depthCharge.alive = true; queueDepthCharge = false; initializeDepthCharge(mouseOverRectangleIndex); }
 	if (depthCharge.alive) { depthCharge.hint = false; castDepthCharge(elapsedTimeSeconds); }
 
 	if (isRooted == 0) { 
