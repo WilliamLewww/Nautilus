@@ -31,6 +31,18 @@ bool Nautilus::checkRiptideCollision(RectangleIndex* rectangleIndex) {
 	return false;
 }
 
+bool Nautilus::checkDepthChargeCollision(RectangleIndex* rectangleIndex) {
+	if (depthCharge.explosionPosition.x + depthCharge.explosionWidth >= rectangleIndex->position->x &&
+		depthCharge.explosionPosition.x <= rectangleIndex->position->x + *rectangleIndex->width &&
+		depthCharge.explosionPosition.y + depthCharge.explosionHeight >= rectangleIndex->position->y &&
+		depthCharge.explosionPosition.y <= rectangleIndex->position->y + *rectangleIndex->height) {
+
+		return true;
+	}
+
+	return false;
+}
+
 void Nautilus::handleRiptideCollision(RectangleIndex* rectangleIndex) {
 	if (std::find(riptide.hitRectangleList.begin(), riptide.hitRectangleList.end(), rectangleIndex) == riptide.hitRectangleList.end()) {
 		damageRiptide(rectangleIndex, false);
@@ -58,6 +70,13 @@ void Nautilus::handleRiptideCollision(RectangleIndex* rectangleIndex) {
 				}
 			}
 		}
+	}
+}
+
+void Nautilus::handleDepthChargeCollision(RectangleIndex* rectangleIndex) {
+	if (rectangleIndex != depthCharge.rectangleIndex && std::find(depthCharge.hitRectangleList.begin(), depthCharge.hitRectangleList.end(), rectangleIndex) == depthCharge.hitRectangleList.end()) {
+		damageDepthCharge(rectangleIndex, false);
+		depthCharge.hitRectangleList.push_back(rectangleIndex);
 	}
 }
 
@@ -390,6 +409,7 @@ void Nautilus::initializeDepthCharge(RectangleIndex* rectangleIndex) {
 		cooldowns.depth_charge = cooldownsParent.depth_charge[cooldowns.depth_charge_level];
 		depthCharge.explosionPosition = center() - Vector2(depthCharge.explosionWidth / 2, depthCharge.explosionHeight / 2);
 		depthCharge.timer = 0;
+		depthCharge.hitRectangleList.clear();
 	}
 }
 

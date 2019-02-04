@@ -113,6 +113,8 @@ struct DepthCharge {
 	RectangleIndex* rectangleIndex;
 	Vector2 explosionPosition;
 	int explosionWidth = 30, explosionHeight = 30;
+
+	std::vector<RectangleIndex*> hitRectangleList;
 };
 
 class Nautilus {
@@ -222,11 +224,14 @@ public:
 	void anchorSetHook(RectangleIndex* rectangleIndex);
 
 	inline bool riptideIsAlive() { return riptide.alive; };
+	inline bool depthChargeIsAlive() { return depthCharge.alive; };
 
 	bool checkAnchorCollision(RectangleIndex* rectangleIndex);
 	bool checkRiptideCollision(RectangleIndex* rectangleIndex);
+	bool checkDepthChargeCollision(RectangleIndex* rectangleIndex);
 
 	void handleRiptideCollision(RectangleIndex* rectangleIndex);
+	void handleDepthChargeCollision(RectangleIndex* rectangleIndex);
 
 	void initialize();
 

@@ -40,6 +40,14 @@ void World::updateNautilus() {
 		}
 	}
 
+	if (nautilus.depthChargeIsAlive()) {
+		for (Dummy& dummy : dummyList) {
+			if (nautilus.checkDepthChargeCollision(dummy.getRectangleIndexAddr())) {
+				nautilus.handleDepthChargeCollision(dummy.getRectangleIndexAddr());
+			}
+		}
+	}
+
 	if (input.getRightButtonPress()) {
 		bool selectedEntity = false;
 		for (Dummy& dummy : dummyList) {
