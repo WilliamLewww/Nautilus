@@ -15,6 +15,7 @@ struct NautilusDurationsParent {
 	double staggering_blow[5] = { 0.5, 0.75, 1, 1.25, 1.5 };
 	double titans_wrath = 6.0;
 	double titans_wrath_effect = 1.0;
+	double riptide_slow = 1.5;
 	double depth_charge[3] = { 1.5, 2, 2.5 };
 };
 
@@ -32,6 +33,7 @@ struct NautilusDamageAbilities {
 	double titans_wrath_shield[5] = { 60, 70, 80, 90, 100 };
 	double titans_wrath_shield_scale[5] = { 9, 10, 11, 12, 13 };
 	double riptide[5] = { 55, 85, 115, 145, 175 };
+	double riptide_slow[5] = { 30, 35, 40, 45, 50 };
 	double depth_charge_trail[3] = { 125, 175, 225 };
 	double depth_charge[3] = { 200, 325, 450 };
 };
@@ -107,8 +109,9 @@ struct Riptide {
 struct DepthCharge {
 	bool alive = false;
 	bool hint = false;
-
 	double timer = 0;
+
+	int explosionColor[3] = { 0, 0, 255 };
 
 	RectangleIndex* rectangleIndex;
 	Vector2 explosionPosition;
@@ -150,6 +153,7 @@ private:
 	int colorHelmet[3] = { 79, 44, 41 };
 	int colorPath[3] = { 92, 185, 196 };
 	int colorClick[3] = { 0, 0, 0 };
+	int colorTargeted[3] = { 255, 0, 0 };
 
 	int colorDamagePhysical[3] = { 255, 0, 0 };
 	int colorDamageMagic[3] = { 0, 0, 255 };

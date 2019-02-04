@@ -5,7 +5,7 @@ int colorStatusBarHealth[3] = { 19, 173, 29 };
 int colorStatusBarTick[3] = { 0, 0, 0 };
 
 double getActualSpeed(Stats stats) {
-	return (stats.movement_speed * 0.5) + stats.speed_modifier;
+	return (stats.movement_speed * 0.5) * stats.speed_modifier;
 }
 
 void upgradeStats(Stats& stats, StatsUpgrade statsUpgrade) {

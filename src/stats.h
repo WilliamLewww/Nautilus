@@ -10,7 +10,7 @@ struct Stats {
 	double armor, magic_resist;
 	double movement_speed;
 
-	double speed_modifier = 0;
+	double speed_modifier = 1.0;
 };
 
 struct StatsUpgrade {

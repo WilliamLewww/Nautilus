@@ -76,6 +76,7 @@ void Nautilus::handleRiptideCollision(RectangleIndex* rectangleIndex) {
 void Nautilus::handleDepthChargeCollision(RectangleIndex* rectangleIndex) {
 	if (rectangleIndex != depthCharge.rectangleIndex && std::find(depthCharge.hitRectangleList.begin(), depthCharge.hitRectangleList.end(), rectangleIndex) == depthCharge.hitRectangleList.end()) {
 		damageDepthCharge(rectangleIndex, false);
+		*rectangleIndex->isRooted = durationsParent.depth_charge[cooldowns.depth_charge_level] - 0.5;
 		depthCharge.hitRectangleList.push_back(rectangleIndex);
 	}
 }
@@ -584,12 +585,12 @@ void Nautilus::draw() {
 	if (helmet.alive) { drawing.drawRect(position, width, height / 3, colorHelmet); }
 
 	if (depthCharge.hint && mouseOverRectangleIndex != nullptr) {
-		drawing.drawRectOutline(*mouseOverRectangleIndex->position - Vector2(5, 5), *mouseOverRectangleIndex->width + 10, *mouseOverRectangleIndex->height + 10);
+		drawing.drawRectOutline(*mouseOverRectangleIndex->position - Vector2(5, 5), *mouseOverRectangleIndex->width + 10, *mouseOverRectangleIndex->height + 10, colorTargeted);
 	}
 
 	if (depthCharge.alive) {
-		drawing.drawRectOutline(*depthCharge.rectangleIndex->position - Vector2(5, 5), *depthCharge.rectangleIndex->width + 10, *depthCharge.rectangleIndex->height + 10);
-		drawing.drawRect(depthCharge.explosionPosition, depthCharge.explosionWidth, depthCharge.explosionHeight);
+		drawing.drawRectOutline(*depthCharge.rectangleIndex->position - Vector2(5, 5), *depthCharge.rectangleIndex->width + 10, *depthCharge.rectangleIndex->height + 10, colorTargeted);
+		drawing.drawRect(depthCharge.explosionPosition, depthCharge.explosionWidth, depthCharge.explosionHeight, depthCharge.explosionColor);
 	}
 
 	if (anchor.hint) {
