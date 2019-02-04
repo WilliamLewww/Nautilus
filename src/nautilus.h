@@ -15,7 +15,7 @@ struct NautilusDurationsParent {
 	double staggering_blow[5] = { 0.5, 0.75, 1, 1.25, 1.5 };
 	double titans_wrath = 6.0;
 	double titans_wrath_effect = 1.0;
-	double depth_charge[3] = { 1, 1.5, 2 };
+	double depth_charge[3] = { 1.5, 2, 2.5 };
 };
 
 struct NautilusCooldownsParent {
@@ -108,7 +108,11 @@ struct DepthCharge {
 	bool alive = false;
 	bool hint = false;
 
+	double timer = 0;
+
 	RectangleIndex* rectangleIndex;
+	Vector2 explosionPosition;
+	int explosionWidth = 30, explosionHeight = 30;
 };
 
 class Nautilus {
@@ -182,6 +186,7 @@ private:
 	void damageAuto(RectangleIndex* rectangleIndex, bool empowered);
 	void damageDredgeLine(RectangleIndex* rectangleIndex);
 	void damageRiptide(RectangleIndex* rectangleIndex, bool additional);
+	void damageDepthCharge(RectangleIndex* rectangleIndex, bool parent);
 
 	void generateDamageDisplay(Vector2 position, double damage, int type);
 	void updateDamageDisplay(float elapsedTimeSeconds);
@@ -198,6 +203,7 @@ private:
 
 	void initializeDepthCharge(RectangleIndex* rectangleIndex);
 	void castDepthCharge(float elapsedTimeSeconds);
+	bool checkDepthChargeCollisionParent();
 
 	void updateTimer(float elapsedTimeSeconds);
 

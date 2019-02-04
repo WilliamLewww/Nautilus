@@ -252,7 +252,8 @@ void Nautilus::castDredgeLine(float elapsedTimeSeconds) {
 				anchor.alive = false;
 				anchor.hooked = false;
 				resetRoot();
-				if (*anchor.rectangleIndex->isRooted == -1) { *anchor.rectangleIndex->isRooted = 0; }
+				if (*anchor.rectangleIndex->isRooted == -1) { *anchor.rectangleIndex->isRooted = 0.15; }
+				else { *anchor.rectangleIndex->isRooted += 0.25; }
 			}
 			else {
 				position.x -= (difference.x / (abs(difference.x) + abs(difference.y))) * 227.5 * elapsedTimeSeconds;
@@ -387,11 +388,38 @@ void Nautilus::initializeDepthCharge(RectangleIndex* rectangleIndex) {
 		autoReset();
 		cooldowns.can_depth_charge = false;
 		cooldowns.depth_charge = cooldownsParent.depth_charge[cooldowns.depth_charge_level];
+		depthCharge.explosionPosition = center() - Vector2(depthCharge.explosionWidth / 2, depthCharge.explosionHeight / 2);
+		depthCharge.timer = 0;
 	}
 }
 
 void Nautilus::castDepthCharge(float elapsedTimeSeconds) {
+	if (depthCharge.timer >= 0.12) {
+		Vector2 difference = Vector2(depthCharge.rectangleIndex->position->x + (*depthCharge.rectangleIndex->width / 2), depthCharge.rectangleIndex->position->y + (*depthCharge.rectangleIndex->height / 2)) - (depthCharge.explosionPosition + Vector2(depthCharge.explosionWidth / 2, depthCharge.explosionHeight / 2));
+		depthCharge.explosionPosition.x += (difference.x / (abs(difference.x) + abs(difference.y))) * 40;
+		depthCharge.explosionPosition.y += (difference.y / (abs(difference.x) + abs(difference.y))) * 40;
 
+		depthCharge.timer = 0.0;
+	}
+	else { depthCharge.timer += elapsedTimeSeconds; }
+
+	if (checkDepthChargeCollisionParent()) {
+		*depthCharge.rectangleIndex->isRooted = durationsParent.depth_charge[cooldowns.depth_charge_level];
+		damageDepthCharge(depthCharge.rectangleIndex, true);
+		depthCharge.alive = false;
+	}
+}
+
+bool Nautilus::checkDepthChargeCollisionParent() {
+	if (depthCharge.explosionPosition.x + depthCharge.explosionWidth >= depthCharge.rectangleIndex->position->x &&
+		depthCharge.explosionPosition.x <= depthCharge.rectangleIndex->position->x + *depthCharge.rectangleIndex->width &&
+		depthCharge.explosionPosition.y + depthCharge.explosionHeight >= depthCharge.rectangleIndex->position->y &&
+		depthCharge.explosionPosition.y <= depthCharge.rectangleIndex->position->y + *depthCharge.rectangleIndex->height) {
+
+		return true;
+	}
+
+	return false;
 }
 
 void Nautilus::createPath(int x, int y) {
@@ -448,7 +476,7 @@ void Nautilus::autoAttack(float elapsedTimeSeconds) {
 				if (cooldowns.can_staggering_blow) {
 					cooldowns.can_staggering_blow = false;
 					cooldowns.staggering_blow = cooldownsParent.staggering_blow[cooldowns.staggering_blow_level];
-					*selectedRectangleIndex->isRooted = durationsParent.staggering_blow[cooldowns.staggering_blow_level];
+					*selectedRectangleIndex->isRooted += durationsParent.staggering_blow[cooldowns.staggering_blow_level];
 					damageAuto(selectedRectangleIndex, true);
 				}
 				else { damageAuto(selectedRectangleIndex, false); }
@@ -486,6 +514,17 @@ void Nautilus::damageRiptide(RectangleIndex* rectangleIndex, bool additional) {
 	else {
 		*rectangleIndex->health -= (damageAbilities.riptide[cooldowns.riptide_level] + (0.3 * stats.ability_power)) * 0.5;
 		generateDamageDisplay(*rectangleIndex->position, (damageAbilities.riptide[cooldowns.riptide_level] + (0.3 * stats.ability_power)) * 0.5, 1);
+	}
+}
+
+void Nautilus::damageDepthCharge(RectangleIndex* rectangleIndex, bool parent) {
+	if (parent) {
+		*rectangleIndex->health -= damageAbilities.depth_charge[cooldowns.depth_charge_level] + (0.8 * stats.ability_power);
+		generateDamageDisplay(*rectangleIndex->position, damageAbilities.depth_charge[cooldowns.depth_charge_level] + (0.8 * stats.ability_power), 1);
+	}
+	else {
+		*rectangleIndex->health -= damageAbilities.depth_charge_trail[cooldowns.depth_charge_level] + (0.4 * stats.ability_power);
+		generateDamageDisplay(*rectangleIndex->position, damageAbilities.depth_charge_trail[cooldowns.depth_charge_level] + (0.4 * stats.ability_power), 1);
 	}
 }
 
@@ -527,8 +566,10 @@ void Nautilus::draw() {
 	if (depthCharge.hint && mouseOverRectangleIndex != nullptr) {
 		drawing.drawRectOutline(*mouseOverRectangleIndex->position - Vector2(5, 5), *mouseOverRectangleIndex->width + 10, *mouseOverRectangleIndex->height + 10);
 	}
+
 	if (depthCharge.alive) {
 		drawing.drawRectOutline(*depthCharge.rectangleIndex->position - Vector2(5, 5), *depthCharge.rectangleIndex->width + 10, *depthCharge.rectangleIndex->height + 10);
+		drawing.drawRect(depthCharge.explosionPosition, depthCharge.explosionWidth, depthCharge.explosionHeight);
 	}
 
 	if (anchor.hint) {
